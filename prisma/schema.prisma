@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g. "INVENTORY_MANAGER", "WAREHOUSE_STAFF"
+  label       String   // e.g. "Inventory Manager", "Warehouse Staff"
+  description String
+  permissions String   // JSON string of granular permissions
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  passwordHash      String
+  name              String
+  roleId            String
+  role              Role               @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  department        String?
+  warehouseLocation String?            // Assigned warehouse or zone (e.g. "North Hub - Shelf A")
+  isActive          Boolean            @default(true)
+  lastLoginAt       DateTime?
+  sessions          Session[]
+  resetOtps         PasswordResetOtp[]
+  auditLogs         AuditLog[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([email])
+  @@index([roleId])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model PasswordResetOtp {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  otpHash   String   // Hashed 6-digit OTP code for zero plaintext exposure
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("password_reset_otps")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String   // e.g. "USER_REGISTERED", "USER_LOGIN_SUCCESS", "OTP_REQUESTED", "PASSWORD_RESET_SUCCESS"
+  details   String?  // JSON stringified metadata
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@map("audit_logs")
+}
