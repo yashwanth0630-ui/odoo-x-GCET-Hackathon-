@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
@@ -172,7 +172,7 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
               Warehouse &amp; Location Configuration
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#988879] mt-1">
               Manage facility hierarchies: Regional Warehouses &rarr; Sub-Locations (Racks, Bins, Docks, Bays).
             </p>
           </div>
@@ -181,7 +181,7 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
             <button
               onClick={() => setShowWhModal(true)}
               id="add-warehouse-btn"
-              className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all"
+              className="px-4 py-2.5 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-[#AD543C]/30 transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Add Facility (Warehouse)</span>
@@ -200,59 +200,59 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
         {/* Warehouses List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {loading ? (
-            <div className="col-span-2 py-12 text-center text-slate-400">
-              <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-400" />
+            <div className="col-span-2 py-12 text-center text-[#988879]">
+              <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-[#AD543C]" />
               <span>Loading warehouse configurations...</span>
             </div>
           ) : (
             warehouses.map((wh) => (
               <div
                 key={wh.id}
-                className="glass-panel rounded-2xl border border-white/10 p-5 space-y-4 hover:border-indigo-500/30 transition-all"
+                className="glass-panel rounded-2xl border border-[#C3B4AA]/12 p-5 space-y-4 hover:border-[#AD543C]/30 transition-all"
               >
                 {/* Warehouse Card Header */}
-                <div className="flex items-start justify-between pb-3 border-b border-white/5">
+                <div className="flex items-start justify-between pb-3 border-b border-[#C3B4AA]/8">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <div className="p-3 rounded-xl bg-[#AD543C]/10 text-[#AD543C] border border-[#AD543C]/20">
                       <Warehouse className="w-6 h-6" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <h2 className="text-base font-bold text-white">{wh.name}</h2>
-                        <span className="font-mono text-xs font-bold text-indigo-400 px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+                        <span className="font-mono text-xs font-bold text-[#AD543C] px-2 py-0.5 rounded bg-[#AD543C]/10 border border-[#AD543C]/20">
                           {wh.code}
                         </span>
                       </div>
                       {wh.address && (
-                        <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
+                        <p className="text-xs text-[#988879] flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3 h-3 text-[#6E655C] shrink-0" />
                           <span>{wh.address}</span>
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <span className="text-[11px] font-mono text-slate-400 bg-slate-900 px-2 py-1 rounded border border-white/5">
+                  <span className="text-[11px] font-mono text-[#988879] bg-[#2e2823] px-2 py-1 rounded border border-[#C3B4AA]/8">
                     {wh.locations.length} Sub-Locations
                   </span>
                 </div>
 
                 {/* Sub-Locations Grid */}
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#988879] mb-2">
                     Configured Racks, Bays &amp; Docks:
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {wh.locations.map((loc: any) => (
                       <div
                         key={loc.id}
-                        className="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs"
+                        className="p-2.5 rounded-xl bg-[#2e2823]/70 border border-[#C3B4AA]/8 flex items-center justify-between text-xs"
                       >
                         <div>
                           <p className="font-semibold text-white">{loc.name}</p>
-                          <span className="font-mono text-[10px] text-slate-400">{loc.code}</span>
+                          <span className="font-mono text-[10px] text-[#988879]">{loc.code}</span>
                         </div>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-slate-800 text-indigo-300">
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-[#584D44] text-[#e0a08a]">
                           {loc.type}
                         </span>
                       </div>
@@ -268,17 +268,17 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
       {/* CREATE WAREHOUSE MODAL */}
       {showWhModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-md rounded-2xl border border-white/10 shadow-2xl p-6 relative">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+          <div className="glass-panel w-full max-w-md rounded-2xl border border-[#C3B4AA]/12 shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#C3B4AA]/12">
               <h3 className="text-base font-bold text-white">Add Warehouse Facility</h3>
-              <button onClick={() => setShowWhModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowWhModal(false)} className="text-[#988879] hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateWarehouse} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Warehouse Name</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Warehouse Name</label>
                 <input
                   type="text"
                   required
@@ -290,7 +290,7 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Facility Code</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Facility Code</label>
                 <input
                   type="text"
                   required
@@ -302,7 +302,7 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Physical Address</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Physical Address</label>
                 <input
                   type="text"
                   value={whAddress}
@@ -312,18 +312,18 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#C3B4AA]/12 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowWhModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-[#584D44] text-[#C3B4AA]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold"
+                  className="px-5 py-2 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white font-semibold"
                 >
                   Save Warehouse
                 </button>
@@ -336,17 +336,17 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
       {/* CREATE SUB-LOCATION MODAL */}
       {showLocModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-md rounded-2xl border border-white/10 shadow-2xl p-6 relative">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+          <div className="glass-panel w-full max-w-md rounded-2xl border border-[#C3B4AA]/12 shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#C3B4AA]/12">
               <h3 className="text-base font-bold text-white">Add Sub-Location</h3>
-              <button onClick={() => setShowLocModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowLocModal(false)} className="text-[#988879] hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateLocation} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Parent Warehouse</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Parent Warehouse</label>
                 <select
                   value={targetWhId}
                   onChange={(e) => setTargetWhId(e.target.value)}
@@ -361,7 +361,7 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Sub-Location Name</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Sub-Location Name</label>
                 <input
                   type="text"
                   required
@@ -374,7 +374,7 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Location Code</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Location Code</label>
                   <input
                     type="text"
                     required
@@ -385,7 +385,7 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Type</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Type</label>
                   <select
                     value={locType}
                     onChange={(e) => setLocType(e.target.value)}
@@ -399,11 +399,11 @@ export default function WarehouseSettingsClient({ user }: WarehouseSettingsClien
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#C3B4AA]/12 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowLocModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-[#584D44] text-[#C3B4AA]"
                 >
                   Cancel
                 </button>

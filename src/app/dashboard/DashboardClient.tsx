@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
@@ -123,7 +123,7 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
                     Action Needed
                   </span>
                 </h3>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <p className="text-xs text-[#C3B4AA] mt-0.5">
                   Automated reordering rules flagged items requiring immediate supplier purchase orders:{" "}
                   <strong className="text-amber-300">
                     {lowStockAlerts.map((i: any) => `${i.name} (${i.totalStock}/${i.minThreshold} ${i.uom})`).join(", ")}
@@ -145,14 +145,14 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
         {/* TOP WELCOME & METRICS RIBBON */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#AD543C] text-xs font-semibold uppercase tracking-wider mb-1">
               <Boxes className="w-4 h-4" />
               <span>Centralized Real-Time Operations</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Inventory Cockpit &bull; Overview
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+            <p className="text-xs sm:text-sm text-[#988879] mt-0.5">
               Live operational telemetry replacing manual registers with real-time accuracy.
             </p>
           </div>
@@ -161,7 +161,7 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
             <button
               onClick={loadData}
               title="Refresh telemetry"
-              className="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition-colors"
+              className="p-2.5 rounded-xl bg-[#2e2823]/80 hover:bg-[#584D44] border border-[#C3B4AA]/12 text-[#988879] hover:text-white transition-colors"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             </button>
@@ -173,11 +173,11 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
           {/* Widget 1: Total Products in Stock */}
           <Link
             href="/products"
-            className="glass-panel p-4 rounded-2xl border border-white/10 hover:border-indigo-500/40 transition-all group"
+            className="glass-panel p-4 rounded-2xl border border-[#C3B4AA]/12 hover:border-[#AD543C]/40 transition-all group"
           >
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
+            <div className="flex items-center justify-between text-[#988879] mb-1.5">
               <span className="text-[11px] font-semibold uppercase tracking-wider">Products in Stock</span>
-              <Package className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+              <Package className="w-4 h-4 text-[#AD543C] group-hover:scale-110 transition-transform" />
             </div>
             <div className="text-2xl font-bold text-white font-mono">{metrics.totalProductsCatalog} SKUs</div>
             <span className="text-[10px] text-emerald-400 mt-1 block">
@@ -203,48 +203,48 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
           {/* Widget 3: Pending Receipts */}
           <Link
             href="/operations/receipts"
-            className="glass-panel p-4 rounded-2xl border border-white/10 hover:border-indigo-500/40 transition-all group"
+            className="glass-panel p-4 rounded-2xl border border-[#C3B4AA]/12 hover:border-[#AD543C]/40 transition-all group"
           >
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
+            <div className="flex items-center justify-between text-[#988879] mb-1.5">
               <span className="text-[11px] font-semibold uppercase tracking-wider">Pending Receipts</span>
               <ArrowDownToLine className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
             </div>
             <div className="text-2xl font-bold text-white font-mono">{metrics.pendingReceipts} Inbound</div>
-            <span className="text-[10px] text-slate-400 mt-1 block">Supplier orders incoming</span>
+            <span className="text-[10px] text-[#988879] mt-1 block">Supplier orders incoming</span>
           </Link>
 
           {/* Widget 4: Pending Deliveries */}
           <Link
             href="/operations/deliveries"
-            className="glass-panel p-4 rounded-2xl border border-white/10 hover:border-indigo-500/40 transition-all group"
+            className="glass-panel p-4 rounded-2xl border border-[#C3B4AA]/12 hover:border-[#AD543C]/40 transition-all group"
           >
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
+            <div className="flex items-center justify-between text-[#988879] mb-1.5">
               <span className="text-[11px] font-semibold uppercase tracking-wider">Pending Deliveries</span>
               <Truck className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
             </div>
             <div className="text-2xl font-bold text-white font-mono">{metrics.pendingDeliveries} Outbound</div>
-            <span className="text-[10px] text-slate-400 mt-1 block">Orders to pick &amp; pack</span>
+            <span className="text-[10px] text-[#988879] mt-1 block">Orders to pick &amp; pack</span>
           </Link>
 
           {/* Widget 5: Internal Transfers Scheduled */}
           <Link
             href="/operations/move-history"
-            className="glass-panel p-4 rounded-2xl border border-white/10 hover:border-indigo-500/40 transition-all group col-span-2 sm:col-span-1"
+            className="glass-panel p-4 rounded-2xl border border-[#C3B4AA]/12 hover:border-[#AD543C]/40 transition-all group col-span-2 sm:col-span-1"
           >
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
+            <div className="flex items-center justify-between text-[#988879] mb-1.5">
               <span className="text-[11px] font-semibold uppercase tracking-wider">Transfers Scheduled</span>
-              <ArrowRightLeft className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+              <ArrowRightLeft className="w-4 h-4 text-[#AD543C] group-hover:scale-110 transition-transform" />
             </div>
             <div className="text-2xl font-bold text-white font-mono">{metrics.pendingTransfers} Internal</div>
-            <span className="text-[10px] text-slate-400 mt-1 block">Location-to-location moves</span>
+            <span className="text-[10px] text-[#988879] mt-1 block">Location-to-location moves</span>
           </Link>
         </div>
 
         {/* DYNAMIC FILTERS BAR (Required by Task 5) */}
-        <div className="glass-panel p-4 rounded-2xl border border-white/10 space-y-3">
-          <div className="flex items-center justify-between text-xs font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">
+        <div className="glass-panel p-4 rounded-2xl border border-[#C3B4AA]/12 space-y-3">
+          <div className="flex items-center justify-between text-xs font-bold text-white uppercase tracking-wider border-b border-[#C3B4AA]/8 pb-2">
             <span className="flex items-center gap-1.5">
-              <Filter className="w-3.5 h-3.5 text-indigo-400" />
+              <Filter className="w-3.5 h-3.5 text-[#AD543C]" />
               Dynamic Operations &amp; Ledger Filters
             </span>
             <button
@@ -255,7 +255,7 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
                 setFilterCategory("ALL");
                 setSearchQuery("");
               }}
-              className="text-[11px] text-indigo-400 hover:text-indigo-300 font-normal"
+              className="text-[11px] text-[#AD543C] hover:text-[#e0a08a] font-normal"
             >
               Reset All Filters
             </button>
@@ -264,9 +264,9 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 text-xs">
             {/* Search */}
             <div>
-              <label className="block text-[10px] text-slate-400 font-semibold mb-1 uppercase">Search Ref / Item</label>
+              <label className="block text-[10px] text-[#988879] font-semibold mb-1 uppercase">Search Ref / Item</label>
               <div className="relative">
-                <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Search className="w-3.5 h-3.5 text-[#6E655C] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -279,11 +279,11 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
 
             {/* Document Type Filter */}
             <div>
-              <label className="block text-[10px] text-slate-400 font-semibold mb-1 uppercase">Document Type</label>
+              <label className="block text-[10px] text-[#988879] font-semibold mb-1 uppercase">Document Type</label>
               <select
                 value={filterDocType}
                 onChange={(e) => setFilterDocType(e.target.value)}
-                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-slate-900 text-xs"
+                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-[#2e2823] text-xs"
               >
                 <option value="ALL">All Documents</option>
                 <option value="RECEIPT">Receipts (Incoming)</option>
@@ -295,11 +295,11 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-[10px] text-slate-400 font-semibold mb-1 uppercase">Status</label>
+              <label className="block text-[10px] text-[#988879] font-semibold mb-1 uppercase">Status</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-slate-900 text-xs"
+                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-[#2e2823] text-xs"
               >
                 <option value="ALL">All Statuses</option>
                 <option value="DRAFT">Draft</option>
@@ -312,11 +312,11 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
 
             {/* Warehouse Filter */}
             <div>
-              <label className="block text-[10px] text-slate-400 font-semibold mb-1 uppercase">Warehouse / Hub</label>
+              <label className="block text-[10px] text-[#988879] font-semibold mb-1 uppercase">Warehouse / Hub</label>
               <select
                 value={filterWarehouse}
                 onChange={(e) => setFilterWarehouse(e.target.value)}
-                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-slate-900 text-xs"
+                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-[#2e2823] text-xs"
               >
                 <option value="ALL">All Warehouses</option>
                 {warehouses.map((wh) => (
@@ -329,11 +329,11 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
 
             {/* Product Category Filter */}
             <div>
-              <label className="block text-[10px] text-slate-400 font-semibold mb-1 uppercase">Product Category</label>
+              <label className="block text-[10px] text-[#988879] font-semibold mb-1 uppercase">Product Category</label>
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-slate-900 text-xs"
+                className="glass-input w-full px-2.5 py-1.5 rounded-lg text-white bg-[#2e2823] text-xs"
               >
                 <option value="ALL">All Categories</option>
                 {categories.map((c) => (
@@ -349,31 +349,31 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
         {/* DUAL STREAM: RECENT OPERATIONS & CENTRALIZED STOCK LEDGER */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Stream 1: Recent Operations Filtered Feed */}
-          <div className="glass-panel rounded-2xl border border-white/10 p-5 shadow-xl space-y-4">
+          <div className="glass-panel rounded-2xl border border-[#C3B4AA]/12 p-5 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <FileCheck2 className="w-4 h-4 text-indigo-400" />
+                <FileCheck2 className="w-4 h-4 text-[#AD543C]" />
                 <span>Filtered Operations Stream</span>
               </h2>
-              <span className="text-[11px] text-slate-400 font-mono">
+              <span className="text-[11px] text-[#988879] font-mono">
                 {filteredDocuments.length} document(s)
               </span>
             </div>
 
             <div className="space-y-2">
               {filteredDocuments.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 text-xs">
+                <div className="p-8 text-center text-[#6E655C] text-xs">
                   No operational documents match current filters.
                 </div>
               ) : (
                 filteredDocuments.map((doc: any) => (
                   <div
                     key={doc.id}
-                    className="p-3 rounded-xl bg-slate-900/60 border border-white/5 hover:border-white/10 transition-colors flex items-center justify-between text-xs"
+                    className="p-3 rounded-xl bg-[#2e2823]/60 border border-[#C3B4AA]/8 hover:border-[#C3B4AA]/12 transition-colors flex items-center justify-between text-xs"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-indigo-300">{doc.referenceNumber}</span>
+                        <span className="font-mono font-bold text-[#e0a08a]">{doc.referenceNumber}</span>
                         <span
                           className={`px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${
                             doc.status === "DONE"
@@ -386,7 +386,7 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
                           {doc.status}
                         </span>
                       </div>
-                      <p className="text-slate-400 text-[11px] mt-0.5">
+                      <p className="text-[#988879] text-[11px] mt-0.5">
                         {doc.partnerName || "Internal Facility Move"} &bull;{" "}
                         {doc.items.map((it: any) => `${it.product?.name} (Qty ${it.quantity})`).join(", ")}
                       </p>
@@ -400,7 +400,7 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
                           ? "/operations/deliveries"
                           : "/operations/move-history"
                       }
-                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                      className="p-1.5 rounded-lg bg-[#584D44] hover:bg-[#6E655C] text-[#C3B4AA] hover:text-white"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </Link>
@@ -411,7 +411,7 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
           </div>
 
           {/* Stream 2: Centralized Stock Ledger Feed */}
-          <div className="glass-panel rounded-2xl border border-white/10 p-5 shadow-xl space-y-4">
+          <div className="glass-panel rounded-2xl border border-[#C3B4AA]/12 p-5 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
                 <History className="w-4 h-4 text-emerald-400" />
@@ -419,7 +419,7 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
               </h2>
               <Link
                 href="/operations/move-history"
-                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                className="text-xs text-[#AD543C] hover:text-[#e0a08a] flex items-center gap-1"
               >
                 <span>Full Ledger</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -428,21 +428,21 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
 
             <div className="space-y-2">
               {!analytics?.recentMovements || analytics.recentMovements.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 text-xs">
+                <div className="p-8 text-center text-[#6E655C] text-xs">
                   No stock ledger entries recorded yet.
                 </div>
               ) : (
                 analytics.recentMovements.map((move: any) => (
                   <div
                     key={move.id}
-                    className="p-3 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between text-xs"
+                    className="p-3 rounded-xl bg-[#2e2823]/60 border border-[#C3B4AA]/8 flex items-center justify-between text-xs"
                   >
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-semibold text-white">{move.product?.name}</span>
-                        <span className="text-[10px] text-slate-500 font-mono">({move.product?.sku})</span>
+                        <span className="text-[10px] text-[#6E655C] font-mono">({move.product?.sku})</span>
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-[#988879] mt-0.5">
                         {move.sourceLocation ? `${move.sourceLocation.name} → ` : "Inbound Vendor → "}
                         {move.destinationLocation ? move.destinationLocation.name : "Customer Outbound"}
                       </p>
@@ -455,12 +455,12 @@ export default function DashboardClient({ initialUser }: DashboardClientProps) {
                             ? "text-emerald-400"
                             : move.quantity < 0
                             ? "text-rose-400"
-                            : "text-slate-300"
+                            : "text-[#C3B4AA]"
                         }`}
                       >
                         {move.quantity > 0 ? `+${move.quantity}` : move.quantity} {move.product?.uom}
                       </span>
-                      <span className="block text-[10px] text-slate-500 uppercase font-semibold">
+                      <span className="block text-[10px] text-[#6E655C] uppercase font-semibold">
                         {move.type}
                       </span>
                     </div>

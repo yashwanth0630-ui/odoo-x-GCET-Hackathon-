@@ -37,13 +37,26 @@ export async function GET(
       success: true,
       product: {
         ...product,
+        categoryName: product.category?.name || "General",
+        categoryCode: product.category?.code || "GEN",
         totalStock,
+        isLowStock: totalStock <= product.minThreshold,
+        isCritical: totalStock === 0,
         stockStatus:
           totalStock === 0
             ? "OUT_OF_STOCK"
             : totalStock <= product.minThreshold
             ? "LOW_STOCK"
             : "IN_STOCK",
+        stockLevels: product.stockLevels.map((sl: any) => ({
+          ...sl,
+          locationName: sl.location?.name || "Location",
+          locationCode: sl.location?.code || "",
+          locationType: sl.location?.type || "STOCK",
+          warehouseId: sl.location?.warehouseId || sl.location?.warehouse?.id || "",
+          warehouseName: sl.location?.warehouse?.name || "Warehouse",
+          warehouseCode: sl.location?.warehouse?.code || "",
+        })),
       },
     });
   } catch (error) {

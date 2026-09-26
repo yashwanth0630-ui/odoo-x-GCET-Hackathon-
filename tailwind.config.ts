@@ -10,31 +10,35 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Industrial Warehouse Palette
+        wh: {
+          ash:       "#C3B4AA", // Ash Grey - light warm text
+          junkrat:   "#988879", // Junkrat - secondary text
+          badger:    "#6E655C", // Grouchy Badger - muted text
+          rust:      "#AD543C", // Brown Rust - primary accent
+          truffle:   "#584D44", // Dark Truffle - card/panel bg
+          orchestra: "#221D1A", // Dark Orchestra - deepest bg
+        },
         brand: {
-          50: "#eef2ff",
-          100: "#e0e7ff",
-          200: "#c7d2fe",
-          300: "#a5b4fc",
-          400: "#818cf8",
-          500: "#6366f1",
-          600: "#4f46e5",
-          700: "#4338ca",
-          800: "#3730a3",
-          900: "#312e81",
-          950: "#1e1b4b",
+          50:  "#fdf2ee",
+          100: "#f9ddd3",
+          200: "#f3b9a5",
+          300: "#e99577",
+          400: "#d4886e",
+          500: "#AD543C",
+          600: "#974832",
+          700: "#7e3c29",
+          800: "#653020",
+          900: "#4c2418",
+          950: "#33170f",
         },
         inventory: {
           emerald: "#10b981",
-          amber: "#f59e0b",
-          rose: "#f43f5e",
-          cyan: "#06b6d4",
-          violet: "#8b5cf6",
+          amber:   "#f59e0b",
+          rose:    "#f43f5e",
+          cyan:    "#06b6d4",
+          violet:  "#8b5cf6",
         },
-        slate: {
-          850: "#151e2e",
-          900: "#0f172a",
-          950: "#090d16",
-        }
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

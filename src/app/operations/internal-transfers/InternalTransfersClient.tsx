@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
@@ -187,14 +187,14 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#AD543C] text-xs font-semibold uppercase tracking-wider mb-1">
               <ArrowRightLeft className="w-4 h-4" />
               <span>Inter-Warehouse Operations</span>
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
               Internal Transfers
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#988879] mt-1">
               Move inventory between warehouse locations. Validates atomically &mdash; decrements source and increments destination, all logged in the Stock Ledger.
             </p>
           </div>
@@ -202,7 +202,7 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
           <button
             onClick={() => setShowCreateModal(true)}
             id="create-transfer-btn"
-            className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all"
+            className="px-4 py-2.5 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-[#AD543C]/30 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Create Transfer</span>
@@ -210,15 +210,15 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
         </div>
 
         {/* Filter Bar */}
-        <div className="glass-panel p-3.5 rounded-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="glass-panel p-3.5 rounded-2xl border border-[#C3B4AA]/12 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#988879] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search reference (WH/INT/...) or notes..."
-              className="glass-input w-full pl-9 pr-3 py-2 rounded-xl text-xs text-white placeholder-slate-500"
+              className="glass-input w-full pl-9 pr-3 py-2 rounded-xl text-xs text-white placeholder-[#6E655C]"
             />
           </div>
 
@@ -229,8 +229,8 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
                 onClick={() => setStatusFilter(st)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                   statusFilter === st
-                    ? "bg-indigo-600 text-white"
-                    : "bg-slate-900/60 text-slate-400 hover:text-white"
+                    ? "bg-[#AD543C] text-white"
+                    : "bg-[#2e2823]/60 text-[#988879] hover:text-white"
                 }`}
               >
                 {st}
@@ -240,10 +240,10 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
         </div>
 
         {/* Transfers Table */}
-        <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+        <div className="glass-panel rounded-2xl border border-[#C3B4AA]/12 overflow-hidden shadow-xl">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-900/80 border-b border-white/10 text-slate-400 uppercase tracking-wider font-semibold">
+              <tr className="bg-[#2e2823]/80 border-b border-[#C3B4AA]/12 text-[#988879] uppercase tracking-wider font-semibold">
                 <th className="py-3 px-4">Reference</th>
                 <th className="py-3 px-4">From (Source)</th>
                 <th className="py-3 px-4">To (Destination)</th>
@@ -255,38 +255,38 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
             <tbody className="divide-y divide-white/5">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-1 text-indigo-400" />
+                  <td colSpan={6} className="py-8 text-center text-[#988879]">
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-1 text-[#AD543C]" />
                     <span>Loading internal transfers...</span>
                   </td>
                 </tr>
               ) : filteredDocs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
+                  <td colSpan={6} className="py-8 text-center text-[#988879]">
                     No internal transfers found.
                   </td>
                 </tr>
               ) : (
                 filteredDocs.map((doc) => (
                   <tr key={doc.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-indigo-400">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#AD543C]">
                       {doc.referenceNumber}
                     </td>
                     <td className="py-3.5 px-4">
                       <span className="text-white font-medium">{doc.sourceLocation?.name}</span>
-                      <span className="text-[10px] text-slate-500 block font-mono">
+                      <span className="text-[10px] text-[#6E655C] block font-mono">
                         {doc.sourceLocation?.code}
                       </span>
                     </td>
                     <td className="py-3.5 px-4">
                       <span className="text-white font-medium">{doc.destinationLocation?.name}</span>
-                      <span className="text-[10px] text-slate-500 block font-mono">
+                      <span className="text-[10px] text-[#6E655C] block font-mono">
                         {doc.destinationLocation?.code}
                       </span>
                     </td>
                     <td className="py-3.5 px-4">
                       {doc.items.map((it: any) => (
-                        <div key={it.id} className="text-slate-300">
+                        <div key={it.id} className="text-[#C3B4AA]">
                           <span>{it.product?.name}</span> &bull;{" "}
                           <strong className="text-amber-400 font-mono">{it.quantity} {it.product?.uom}</strong>
                         </div>
@@ -307,7 +307,7 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       {doc.status === "DONE" ? (
-                        <span className="text-[11px] text-slate-500 flex items-center justify-end gap-1 font-mono">
+                        <span className="text-[11px] text-[#6E655C] flex items-center justify-end gap-1 font-mono">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                           <span>Transferred &bull; Ledger Updated</span>
                         </span>
@@ -334,25 +334,25 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
       {/* CREATE MODAL */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl p-6 relative">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+          <div className="glass-panel w-full max-w-lg rounded-2xl border border-[#C3B4AA]/12 shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#C3B4AA]/12">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <div className="p-2 rounded-xl bg-[#AD543C]/10 text-[#AD543C]">
                   <ArrowRightLeft className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">Create Internal Transfer</h3>
-                  <p className="text-xs text-slate-400">Move stock between warehouse locations</p>
+                  <p className="text-xs text-[#988879]">Move stock between warehouse locations</p>
                 </div>
               </div>
-              <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowCreateModal(false)} className="text-[#988879] hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateTransfer} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">
+                <label className="block text-[#C3B4AA] font-semibold mb-1">
                   Source Location <span className="text-rose-400">*</span>
                 </label>
                 <select
@@ -369,7 +369,7 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">
+                <label className="block text-[#C3B4AA] font-semibold mb-1">
                   Destination Location <span className="text-rose-400">*</span>
                 </label>
                 <select
@@ -387,7 +387,7 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Product</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Product</label>
                   <select
                     value={selectedProductId}
                     onChange={(e) => setSelectedProductId(e.target.value)}
@@ -401,7 +401,7 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Quantity</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Quantity</label>
                   <input
                     type="number"
                     min={1}
@@ -414,28 +414,28 @@ export default function InternalTransfersClient({ user }: InternalTransfersClien
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Notes / Reason</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Notes / Reason</label>
                 <input
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Restocking Bay 12 from central rack"
-                  className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-slate-500"
+                  className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-[#6E655C]"
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#C3B4AA]/12 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-[#584D44] text-[#C3B4AA]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/30"
+                  className="px-5 py-2 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white font-semibold shadow-lg shadow-[#AD543C]/30"
                 >
                   Create Transfer
                 </button>

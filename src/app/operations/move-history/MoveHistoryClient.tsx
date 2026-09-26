@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
@@ -100,14 +100,14 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#AD543C] text-xs font-semibold uppercase tracking-wider mb-1">
               <History className="w-4 h-4" />
               <span>Immutable Audit Trail</span>
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
               Move History &bull; Centralized Stock Ledger
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#988879] mt-1">
               Complete historical record of every receipt, customer dispatch, internal relocation, and cycle count adjustment.
             </p>
           </div>
@@ -116,14 +116,14 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
             <button
               onClick={exportCSV}
               id="export-ledger-csv-btn"
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-white/10 flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 rounded-xl bg-[#584D44] hover:bg-[#6E655C] text-[#C3B4AA] text-xs font-semibold border border-[#C3B4AA]/12 flex items-center gap-1.5 transition-colors"
             >
               <Download className="w-4 h-4" />
               <span>Export Ledger CSV</span>
             </button>
             <button
               onClick={loadData}
-              className="p-2 rounded-xl bg-slate-900 border border-white/10 text-slate-400 hover:text-white"
+              className="p-2 rounded-xl bg-[#2e2823] border border-[#C3B4AA]/12 text-[#988879] hover:text-white"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             </button>
@@ -131,15 +131,15 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
         </div>
 
         {/* Filter Bar */}
-        <div className="glass-panel p-3.5 rounded-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="glass-panel p-3.5 rounded-2xl border border-[#C3B4AA]/12 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#988879] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search reference, SKU, item name, or reason..."
-              className="glass-input w-full pl-9 pr-3 py-2 rounded-xl text-xs text-white placeholder-slate-500"
+              className="glass-input w-full pl-9 pr-3 py-2 rounded-xl text-xs text-white placeholder-[#6E655C]"
             />
           </div>
 
@@ -156,8 +156,8 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
                 onClick={() => setTypeFilter(st.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                   typeFilter === st.id
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "bg-slate-900/60 text-slate-400 hover:text-white"
+                    ? "bg-[#AD543C] text-white shadow-sm"
+                    : "bg-[#2e2823]/60 text-[#988879] hover:text-white"
                 }`}
               >
                 {st.label}
@@ -167,10 +167,10 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
         </div>
 
         {/* Ledger Table */}
-        <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+        <div className="glass-panel rounded-2xl border border-[#C3B4AA]/12 overflow-hidden shadow-xl">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-900/80 border-b border-white/10 text-slate-400 uppercase tracking-wider font-semibold">
+              <tr className="bg-[#2e2823]/80 border-b border-[#C3B4AA]/12 text-[#988879] uppercase tracking-wider font-semibold">
                 <th className="py-3 px-4">Transaction Ref</th>
                 <th className="py-3 px-4">Product / SKU</th>
                 <th className="py-3 px-4">Movement Type</th>
@@ -184,31 +184,31 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
             <tbody className="divide-y divide-white/5">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-1 text-indigo-400" />
+                  <td colSpan={8} className="py-12 text-center text-[#988879]">
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-1 text-[#AD543C]" />
                     <span>Querying centralized ledger records...</span>
                   </td>
                 </tr>
               ) : filteredMovements.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
+                  <td colSpan={8} className="py-12 text-center text-[#988879]">
                     No ledger transactions found matching filters.
                   </td>
                 </tr>
               ) : (
                 filteredMovements.map((m) => (
                   <tr key={m.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-indigo-400">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#AD543C]">
                       {m.reference}
                       {m.reason && (
-                        <p className="text-[10px] text-slate-500 font-normal truncate max-w-[180px]">
+                        <p className="text-[10px] text-[#6E655C] font-normal truncate max-w-[180px]">
                           {m.reason}
                         </p>
                       )}
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-white">{m.product?.name}</div>
-                      <span className="font-mono text-[10px] text-indigo-400">{m.product?.sku}</span>
+                      <span className="font-mono text-[10px] text-[#AD543C]">{m.product?.sku}</span>
                     </td>
                     <td className="py-3.5 px-4">
                       <span
@@ -236,17 +236,17 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
                             ? "text-emerald-400"
                             : m.quantity < 0
                             ? "text-rose-400"
-                            : "text-slate-400"
+                            : "text-[#988879]"
                         }
                       >
                         {m.quantity > 0 ? `+${m.quantity}` : m.quantity} {m.product?.uom}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-slate-300">
+                    <td className="py-3.5 px-4 text-[#C3B4AA]">
                       {m.sourceLocation ? (
                         <div>
                           <span>{m.sourceLocation.name}</span>
-                          <span className="text-[10px] text-slate-500 block font-mono">
+                          <span className="text-[10px] text-[#6E655C] block font-mono">
                             {m.sourceLocation.code}
                           </span>
                         </div>
@@ -254,11 +254,11 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
                         <span className="text-slate-600 italic">Vendor / External</span>
                       )}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-300">
+                    <td className="py-3.5 px-4 text-[#C3B4AA]">
                       {m.destinationLocation ? (
                         <div>
                           <span>{m.destinationLocation.name}</span>
-                          <span className="text-[10px] text-slate-500 block font-mono">
+                          <span className="text-[10px] text-[#6E655C] block font-mono">
                             {m.destinationLocation.code}
                           </span>
                         </div>
@@ -266,10 +266,10 @@ export default function MoveHistoryClient({ user }: MoveHistoryClientProps) {
                         <span className="text-slate-600 italic">Customer / Shipped</span>
                       )}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-300">
+                    <td className="py-3.5 px-4 text-[#C3B4AA]">
                       {m.operator?.name || "System Automated"}
                     </td>
-                    <td className="py-3.5 px-4 text-right text-slate-400 font-mono text-[11px]">
+                    <td className="py-3.5 px-4 text-right text-[#988879] font-mono text-[11px]">
                       {new Date(m.createdAt).toLocaleString()}
                     </td>
                   </tr>

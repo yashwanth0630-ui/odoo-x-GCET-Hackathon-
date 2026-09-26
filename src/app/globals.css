@@ -4,27 +4,41 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Industrial Warehouse Palette */
+    --wh-ash: #C3B4AA;
+    --wh-junkrat: #988879;
+    --wh-badger: #6E655C;
+    --wh-rust: #AD543C;
+    --wh-truffle: #584D44;
+    --wh-orchestra: #221D1A;
+
+    /* Derived shades */
+    --wh-body: #1a1614;
+    --wh-sidebar: #241f1b;
+    --wh-surface: #2e2823;
+    --wh-surface-hover: #3a322c;
+    --wh-input: #332c27;
+    --wh-border: rgba(195, 180, 170, 0.12);
+    --wh-border-strong: rgba(195, 180, 170, 0.2);
   }
 
   * {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--wh-border);
   }
 
   body {
-    background-color: #0b0f19;
-    color: #f1f5f9;
+    background-color: var(--wh-body);
+    color: #e8ddd4;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
-/* Custom Glassmorphism & Micro-interactions */
+/* Custom Glassmorphism – warm industrial */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(46, 40, 35, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--wh-border);
 }
 
 .glass-panel-hover {
@@ -32,32 +46,42 @@
 }
 
 .glass-panel-hover:hover {
-  background: rgba(26, 38, 64, 0.85);
-  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(58, 50, 44, 0.85);
+  border-color: rgba(173, 84, 60, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 12px 30px -10px rgba(173, 84, 60, 0.15);
 }
 
 .glass-input {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(51, 44, 39, 0.6);
+  border: 1px solid var(--wh-border-strong);
   transition: all 0.15s ease-in-out;
 }
 
 .glass-input:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  border-color: #AD543C;
+  box-shadow: 0 0 0 3px rgba(173, 84, 60, 0.25);
 }
 
-/* Gradient accents */
+/* Gradient accents – warm rust & amber */
 .gradient-text {
-  background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #38bdf8 100%);
+  background: linear-gradient(135deg, #e0a08a 0%, #AD543C 50%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-badge {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(56, 189, 248, 0.15));
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  background: linear-gradient(135deg, rgba(173, 84, 60, 0.15), rgba(245, 158, 11, 0.15));
+  border: 1px solid rgba(173, 84, 60, 0.3);
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out both;
 }

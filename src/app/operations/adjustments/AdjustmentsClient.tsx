@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
@@ -161,14 +161,14 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#AD543C] text-xs font-semibold uppercase tracking-wider mb-1">
               <Scale className="w-4 h-4" />
               <span>Physical Count Reconciliation</span>
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
               Inventory Adjustments &amp; Cycle Counts
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#988879] mt-1">
               Fix mismatches between recorded ledger figures and physical counts (e.g. damaged stock or cycle audit).
             </p>
           </div>
@@ -179,7 +179,7 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
               setShowModal(true);
             }}
             id="new-adjustment-btn"
-            className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all"
+            className="px-4 py-2.5 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-[#AD543C]/30 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Perform Stock Adjustment</span>
@@ -187,20 +187,20 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
         </div>
 
         {/* Adjustments Review Table */}
-        <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-xl">
-          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl border border-[#C3B4AA]/12 overflow-hidden shadow-xl">
+          <div className="p-4 border-b border-[#C3B4AA]/12 flex items-center justify-between">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <History className="w-4 h-4 text-indigo-400" />
+              <History className="w-4 h-4 text-[#AD543C]" />
               <span>Discrepancy Audit History</span>
             </h2>
-            <span className="text-xs text-slate-500 font-mono">
+            <span className="text-xs text-[#6E655C] font-mono">
               Total Recorded Adjustments: {adjustments.length}
             </span>
           </div>
 
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-900/80 border-b border-white/10 text-slate-400 uppercase tracking-wider font-semibold">
+              <tr className="bg-[#2e2823]/80 border-b border-[#C3B4AA]/12 text-[#988879] uppercase tracking-wider font-semibold">
                 <th className="py-3 px-4">Adjustment Ref</th>
                 <th className="py-3 px-4">Item SKU / Name</th>
                 <th className="py-3 px-4">Audited Location</th>
@@ -213,30 +213,30 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
             <tbody className="divide-y divide-white/5">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400">
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-1 text-indigo-400" />
+                  <td colSpan={7} className="py-8 text-center text-[#988879]">
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-1 text-[#AD543C]" />
                     <span>Loading adjustment history...</span>
                   </td>
                 </tr>
               ) : adjustments.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400">
+                  <td colSpan={7} className="py-8 text-center text-[#988879]">
                     No physical count adjustments recorded yet.
                   </td>
                 </tr>
               ) : (
                 adjustments.map((adj) => (
                   <tr key={adj.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-indigo-400">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#AD543C]">
                       {adj.reference}
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-white">{adj.product?.name}</div>
-                      <span className="font-mono text-[10px] text-slate-500">{adj.product?.sku}</span>
+                      <span className="font-mono text-[10px] text-[#6E655C]">{adj.product?.sku}</span>
                     </td>
-                    <td className="py-3.5 px-4 text-slate-300">
+                    <td className="py-3.5 px-4 text-[#C3B4AA]">
                       <span className="text-white font-medium">{adj.sourceLocation?.name}</span>
-                      <span className="text-[10px] text-slate-500 block font-mono">
+                      <span className="text-[10px] text-[#6E655C] block font-mono">
                         {adj.sourceLocation?.warehouse?.name}
                       </span>
                     </td>
@@ -247,19 +247,19 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
                             ? "text-emerald-400"
                             : adj.quantity < 0
                             ? "text-rose-400"
-                            : "text-slate-400"
+                            : "text-[#988879]"
                         }
                       >
                         {adj.quantity > 0 ? `+${adj.quantity}` : adj.quantity} {adj.product?.uom}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-slate-300 max-w-[200px] truncate">
+                    <td className="py-3.5 px-4 text-[#C3B4AA] max-w-[200px] truncate">
                       {adj.reason || "Physical count mismatch"}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-400">
+                    <td className="py-3.5 px-4 text-[#988879]">
                       {adj.operator?.name || "System Staff"}
                     </td>
-                    <td className="py-3.5 px-4 text-right text-slate-400 font-mono text-[11px]">
+                    <td className="py-3.5 px-4 text-right text-[#988879] font-mono text-[11px]">
                       {new Date(adj.createdAt).toLocaleString()}
                     </td>
                   </tr>
@@ -273,25 +273,25 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
       {/* ADJUSTMENT MODAL WITH AUTO-CALCULATION */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl p-6 relative">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+          <div className="glass-panel w-full max-w-lg rounded-2xl border border-[#C3B4AA]/12 shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#C3B4AA]/12">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <div className="p-2 rounded-xl bg-[#AD543C]/10 text-[#AD543C]">
                   <Scale className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">Physical Stock Adjustment</h3>
-                  <p className="text-xs text-slate-400">Reconcile physical on-hand units with Stock Ledger</p>
+                  <p className="text-xs text-[#988879]">Reconcile physical on-hand units with Stock Ledger</p>
                 </div>
               </div>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowModal(false)} className="text-[#988879] hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleApplyAdjustment} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Select Catalog Product</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Select Catalog Product</label>
                 <select
                   value={selectedProductId}
                   onChange={(e) => setSelectedProductId(e.target.value)}
@@ -306,7 +306,7 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Audited Sub-Location</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Audited Sub-Location</label>
                 <select
                   value={selectedLocationId}
                   onChange={(e) => setSelectedLocationId(e.target.value)}
@@ -321,17 +321,17 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
               </div>
 
               {/* Real-Time Auto-Calculation Panel (Required by prompt) */}
-              <div className="p-4 rounded-xl bg-slate-900/90 border border-indigo-500/30 space-y-3">
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-[#AD543C]/30 space-y-3">
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-2 rounded-lg bg-slate-800/60 border border-white/5">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Recorded Stock</span>
+                  <div className="p-2 rounded-lg bg-slate-800/60 border border-[#C3B4AA]/8">
+                    <span className="text-[10px] text-[#988879] uppercase tracking-wider block">Recorded Stock</span>
                     <span className="text-lg font-bold font-mono text-white mt-0.5 block">
                       {recordedQuantity}
                     </span>
                   </div>
 
-                  <div className="p-2 rounded-lg bg-indigo-950/60 border border-indigo-500/40">
-                    <span className="text-[10px] text-indigo-300 uppercase tracking-wider block">Counted Qty</span>
+                  <div className="p-2 rounded-lg bg-[#AD543C]/10 border border-[#AD543C]/40">
+                    <span className="text-[10px] text-[#e0a08a] uppercase tracking-wider block">Counted Qty</span>
                     <input
                       type="number"
                       min={0}
@@ -345,7 +345,7 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
                   <div
                     className={`p-2 rounded-lg border ${
                       calculatedDifference === 0
-                        ? "bg-slate-800/60 border-white/5 text-slate-300"
+                        ? "bg-slate-800/60 border-[#C3B4AA]/8 text-[#C3B4AA]"
                         : calculatedDifference > 0
                         ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
                         : "bg-rose-950/60 border-rose-500/40 text-rose-300"
@@ -358,7 +358,7 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
                   </div>
                 </div>
 
-                <div className="text-[11px] text-slate-400 text-center font-medium">
+                <div className="text-[11px] text-[#988879] text-center font-medium">
                   {calculatedDifference < 0 ? (
                     <span className="text-rose-400">
                       ⚠️ Shrinkage / Defect detected: Stock will decrease by {Math.abs(calculatedDifference)} units.
@@ -374,7 +374,7 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">
+                <label className="block text-[#C3B4AA] font-semibold mb-1">
                   Reason for Adjustment <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -383,22 +383,22 @@ export default function AdjustmentsClient({ user }: AdjustmentsClientProps) {
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="e.g. 3 units damaged due to water leak / cycle recount"
-                  className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-slate-500"
+                  className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-[#6E655C]"
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#C3B4AA]/12 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-[#584D44] text-[#C3B4AA]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/30"
+                  className="px-5 py-2 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white font-semibold shadow-lg shadow-[#AD543C]/30"
                 >
                   Apply &amp; Log Adjustment
                 </button>

@@ -463,14 +463,14 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
         {/* Header Ribbon & Create Action */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#AD543C] text-xs font-semibold uppercase tracking-wider mb-1">
               <Boxes className="w-4 h-4" />
               <span>Catalog &amp; Multi-Facility Stock</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Products &amp; Location Stock
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-[#988879] mt-1">
               Manage items, track real-time stock availability across sub-locations, and configure automated reordering thresholds.
             </p>
           </div>
@@ -479,7 +479,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
             <button
               onClick={openCreateModal}
               id="add-product-btn"
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all group"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#AD543C] to-[#c06244] hover:from-[#c06244] hover:to-[#d4886e] text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-[#AD543C]/30 transition-all group"
             >
               <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
               <span>Add New Product</span>
@@ -487,7 +487,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
             <button
               onClick={loadData}
               title="Refresh catalog"
-              className="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition-colors"
+              className="p-2.5 rounded-xl bg-[#2e2823]/80 hover:bg-[#584D44] border border-[#C3B4AA]/12 text-[#988879] hover:text-white transition-colors"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             </button>
@@ -496,10 +496,10 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
 
         {/* Stats Bar */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="glass-panel p-4 rounded-xl border border-white/10">
-            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Catalog SKUs</span>
+          <div className="glass-panel p-4 rounded-xl border border-[#C3B4AA]/12">
+            <span className="text-[11px] font-medium text-[#988879] uppercase tracking-wider">Total Catalog SKUs</span>
             <div className="text-2xl font-bold text-white font-mono mt-1">{stats.totalSKUs}</div>
-            <span className="text-[10px] text-slate-500 mt-1 block">Active across all facilities</span>
+            <span className="text-[10px] text-[#6E655C] mt-1 block">Active across all facilities</span>
           </div>
 
           <div className="glass-panel p-4 rounded-xl border border-amber-500/20 bg-amber-950/10">
@@ -511,39 +511,39 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
             <span className="text-[10px] text-amber-400/80 mt-1 block">At or below reordering threshold</span>
           </div>
 
-          <div className="glass-panel p-4 rounded-xl border border-white/10">
-            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total On-Hand Units</span>
+          <div className="glass-panel p-4 rounded-xl border border-[#C3B4AA]/12">
+            <span className="text-[11px] font-medium text-[#988879] uppercase tracking-wider">Total On-Hand Units</span>
             <div className="text-2xl font-bold text-emerald-400 font-mono mt-1">
               {stats.totalUnits.toLocaleString()}
             </div>
-            <span className="text-[10px] text-slate-500 mt-1 block">Summed across all warehouse racks</span>
+            <span className="text-[10px] text-[#6E655C] mt-1 block">Summed across all warehouse racks</span>
           </div>
 
-          <div className="glass-panel p-4 rounded-xl border border-white/10">
-            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Active Categories</span>
-            <div className="text-2xl font-bold text-indigo-300 font-mono mt-1">{stats.totalCategories}</div>
-            <span className="text-[10px] text-slate-500 mt-1 block">Organized product taxonomy</span>
+          <div className="glass-panel p-4 rounded-xl border border-[#C3B4AA]/12">
+            <span className="text-[11px] font-medium text-[#988879] uppercase tracking-wider">Active Categories</span>
+            <div className="text-2xl font-bold text-[#e0a08a] font-mono mt-1">{stats.totalCategories}</div>
+            <span className="text-[10px] text-[#6E655C] mt-1 block">Organized product taxonomy</span>
           </div>
         </div>
 
         {/* SMART SEARCH & FILTER BAR */}
-        <div className="glass-panel p-4 rounded-2xl border border-white/10 space-y-3">
+        <div className="glass-panel p-4 rounded-2xl border border-[#C3B4AA]/12 space-y-3">
           <div className="flex flex-col md:flex-row items-center gap-3">
             {/* Search Input */}
             <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#988879] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 id="product-search-input"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Smart Search: Filter by SKU (e.g. SKU-9921), Product Name, or Barcode..."
-                className="glass-input w-full pl-10 pr-10 py-2.5 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                className="glass-input w-full pl-10 pr-10 py-2.5 rounded-xl text-xs text-white placeholder-[#6E655C] focus:outline-none focus:border-[#AD543C]"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#988879] hover:text-white"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -553,12 +553,12 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
             {/* Category Dropdown */}
             <div className="flex items-center gap-2 w-full md:w-auto">
               <div className="relative w-full md:w-56">
-                <Tag className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Tag className="w-3.5 h-3.5 text-[#988879] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <select
                   id="category-filter-select"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="glass-input w-full pl-8 pr-8 py-2.5 rounded-xl text-xs text-white bg-slate-900 focus:outline-none focus:border-indigo-500 appearance-none cursor-pointer"
+                  className="glass-input w-full pl-8 pr-8 py-2.5 rounded-xl text-xs text-white bg-[#2e2823] focus:outline-none focus:border-[#AD543C] appearance-none cursor-pointer"
                 >
                   <option value="ALL">All Categories ({categories.length})</option>
                   {categories.map((c) => (
@@ -567,19 +567,19 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]">
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#988879] text-[10px]">
                   ▼
                 </div>
               </div>
 
               {/* Stock Status Pills */}
-              <div className="flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-white/10 shrink-0">
+              <div className="flex items-center gap-1 bg-[#2e2823]/60 p-1 rounded-xl border border-[#C3B4AA]/12 shrink-0">
                 <button
                   onClick={() => setStockStatusFilter("ALL")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     stockStatusFilter === "ALL"
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-[#AD543C] text-white shadow-sm"
+                      : "text-[#988879] hover:text-white"
                   }`}
                 >
                   All
@@ -589,7 +589,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 ${
                     stockStatusFilter === "LOW_STOCK"
                       ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                      : "text-slate-400 hover:text-amber-300"
+                      : "text-[#988879] hover:text-amber-300"
                   }`}
                 >
                   <AlertTriangle className="w-3 h-3 text-amber-400" />
@@ -600,7 +600,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     stockStatusFilter === "IN_STOCK"
                       ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                      : "text-slate-400 hover:text-emerald-300"
+                      : "text-[#988879] hover:text-emerald-300"
                   }`}
                 >
                   In Stock
@@ -611,11 +611,11 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
         </div>
 
         {/* PRODUCTS TABLE */}
-        <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+        <div className="glass-panel rounded-2xl border border-[#C3B4AA]/12 overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-white/10 bg-slate-900/80 text-slate-400 uppercase tracking-wider font-semibold">
+                <tr className="border-b border-[#C3B4AA]/12 bg-[#2e2823]/80 text-[#988879] uppercase tracking-wider font-semibold">
                   <th className="py-3 px-4">SKU / Code</th>
                   <th className="py-3 px-4">Product Name</th>
                   <th className="py-3 px-4">Category</th>
@@ -629,19 +629,19 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               <tbody className="divide-y divide-white/5">
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-slate-400">
+                    <td colSpan={8} className="py-12 text-center text-[#988879]">
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+                        <Loader2 className="w-6 h-6 animate-spin text-[#AD543C]" />
                         <span>Loading product inventory...</span>
                       </div>
                     </td>
                   </tr>
                 ) : filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-slate-400">
+                    <td colSpan={8} className="py-12 text-center text-[#988879]">
                       <Package className="w-8 h-8 text-slate-600 mx-auto mb-2" />
                       <p className="font-semibold text-white">No products found</p>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-xs text-[#6E655C] mt-0.5">
                         Try modifying your search or category filters.
                       </p>
                     </td>
@@ -654,11 +654,11 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                     >
                       {/* SKU */}
                       <td className="py-3.5 px-4">
-                        <span className="font-mono font-bold text-indigo-400 px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+                        <span className="font-mono font-bold text-[#AD543C] px-2 py-0.5 rounded bg-[#AD543C]/10 border border-[#AD543C]/20">
                           {product.sku}
                         </span>
                         {product.barcode && (
-                          <div className="text-[10px] text-slate-500 font-mono mt-1 flex items-center gap-1">
+                          <div className="text-[10px] text-[#6E655C] font-mono mt-1 flex items-center gap-1">
                             <Barcode className="w-3 h-3 text-slate-600" />
                             <span>{product.barcode}</span>
                           </div>
@@ -667,11 +667,11 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
 
                       {/* Product Name & Description */}
                       <td className="py-3.5 px-4 max-w-[220px]">
-                        <div className="font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                        <div className="font-semibold text-white group-hover:text-[#e0a08a] transition-colors">
                           {product.name}
                         </div>
                         {product.description && (
-                          <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                          <p className="text-[11px] text-[#988879] truncate mt-0.5">
                             {product.description}
                           </p>
                         )}
@@ -679,25 +679,25 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
 
                       {/* Category */}
                       <td className="py-3.5 px-4">
-                        <span className="inline-block px-2 py-0.5 rounded-lg text-[11px] font-medium bg-slate-800 text-slate-300 border border-white/5">
+                        <span className="inline-block px-2 py-0.5 rounded-lg text-[11px] font-medium bg-[#584D44] text-[#C3B4AA] border border-[#C3B4AA]/8">
                           {product.categoryName}
                         </span>
                       </td>
 
                       {/* Unit of Measure */}
-                      <td className="py-3.5 px-4 font-mono text-slate-300">
+                      <td className="py-3.5 px-4 font-mono text-[#C3B4AA]">
                         {product.uom}
                       </td>
 
                       {/* Reordering Rules */}
                       <td className="py-3.5 px-4">
                         <div className="text-[11px]">
-                          <span className="text-slate-400">Min: </span>
+                          <span className="text-[#988879]">Min: </span>
                           <span className="font-mono font-semibold text-white">
                             {product.minThreshold} {product.uom}
                           </span>
                         </div>
-                        <div className="text-[10px] text-slate-500">
+                        <div className="text-[10px] text-[#6E655C]">
                           Target: {product.idealStock} {product.uom}
                         </div>
                       </td>
@@ -728,21 +728,26 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                       {/* Locations Breakdown */}
                       <td className="py-3.5 px-4">
                         {product.stockLevels.length === 0 ? (
-                          <span className="text-slate-500 text-[11px] italic">No stock allocated</span>
+                          <span className="text-[#6E655C] text-[11px] italic">No stock allocated</span>
                         ) : (
                           <div className="flex flex-wrap gap-1 max-w-[240px]">
-                            {product.stockLevels.map((sl) => (
-                              <span
-                                key={sl.id}
-                                className="px-1.5 py-0.5 rounded bg-slate-900 border border-white/5 text-[10px] text-slate-300"
-                                title={`${sl.warehouseName} → ${sl.locationName}`}
-                              >
-                                <span className="text-slate-500">{sl.locationName.split("-")[0]}:</span>{" "}
-                                <span className="font-mono font-bold text-indigo-300">
-                                  {sl.quantity}
+                            {product.stockLevels.map((sl: any) => {
+                              const locName = sl.locationName || sl.location?.name || sl.locationCode || sl.location?.code || "Loc";
+                              const whName = sl.warehouseName || sl.location?.warehouse?.name || "Warehouse";
+                              const shortLoc = (locName || "Loc").split("-")[0] || locName;
+                              return (
+                                <span
+                                  key={sl.id}
+                                  className="px-1.5 py-0.5 rounded bg-[#2e2823] border border-[#C3B4AA]/8 text-[10px] text-[#C3B4AA]"
+                                  title={`${whName} → ${locName}`}
+                                >
+                                  <span className="text-[#6E655C]">{shortLoc}:</span>{" "}
+                                  <span className="font-mono font-bold text-[#e0a08a]">
+                                    {sl.quantity}
+                                  </span>
                                 </span>
-                              </span>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                       </td>
@@ -753,7 +758,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                           {/* View Detail / Stock per Location */}
                           <button
                             onClick={() => openDetailModal(product)}
-                            className="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-[#AD543C]/10 hover:bg-[#c06244]/20 text-[#e0a08a] hover:text-white transition-colors"
                             title="Stock availability per location"
                           >
                             <Eye className="w-4 h-4" />
@@ -762,7 +767,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                           {/* Edit Product */}
                           <button
                             onClick={() => openEditModal(product)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-[#584D44] hover:bg-[#6E655C] text-[#C3B4AA] hover:text-white transition-colors"
                             title="Edit product parameters"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -771,7 +776,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                           {/* Delete Product */}
                           <button
                             onClick={() => openDeleteModal(product)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-400 hover:text-rose-400 transition-colors"
+                            className="p-1.5 rounded-lg bg-[#584D44] hover:bg-rose-950 text-[#988879] hover:text-rose-400 transition-colors"
                             title="Delete product"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -792,30 +797,30 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
       {/* ============================================================== */}
       {showDetailModal && selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative">
+          <div className="glass-panel w-full max-w-2xl rounded-2xl border border-[#C3B4AA]/12 shadow-2xl overflow-hidden relative">
             {/* Header */}
-            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+            <div className="p-6 border-b border-[#C3B4AA]/12 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <div className="p-2.5 rounded-xl bg-[#AD543C]/10 text-[#AD543C] border border-[#AD543C]/20">
                   <Package className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-lg font-bold text-white">{selectedProduct.name}</h2>
-                    <span className="font-mono text-xs font-bold text-indigo-400 px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+                    <span className="font-mono text-xs font-bold text-[#AD543C] px-2 py-0.5 rounded bg-[#AD543C]/10 border border-[#AD543C]/20">
                       {selectedProduct.sku}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Category: <span className="text-slate-200">{selectedProduct.categoryName}</span> &bull; UoM:{" "}
-                    <span className="text-slate-200">{selectedProduct.uom}</span>
+                  <p className="text-xs text-[#988879] mt-0.5">
+                    Category: <span className="text-[#C3B4AA]">{selectedProduct.categoryName}</span> &bull; UoM:{" "}
+                    <span className="text-[#C3B4AA]">{selectedProduct.uom}</span>
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white"
+                className="p-1.5 rounded-lg bg-[#584D44] hover:bg-[#6E655C] text-[#988879] hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -823,13 +828,13 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
 
             <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
               {/* Reordering Rules Health Gauge */}
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-2">
+              <div className="p-4 rounded-xl bg-[#2e2823]/80 border border-[#C3B4AA]/8 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-semibold uppercase tracking-wider">
+                  <span className="text-[#988879] font-semibold uppercase tracking-wider">
                     Reorder Rule Compliance:
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-400">Total Available:</span>
+                    <span className="text-[#988879]">Total Available:</span>
                     <span className="font-mono font-bold text-white text-sm">
                       {selectedProduct.totalStock} {selectedProduct.uom}
                     </span>
@@ -837,7 +842,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                 </div>
 
                 {/* Progress bar */}
-                <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden relative">
+                <div className="w-full bg-[#584D44] h-2.5 rounded-full overflow-hidden relative">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       selectedProduct.isCritical
@@ -855,55 +860,63 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                <div className="flex items-center justify-between text-[11px] text-[#988879] pt-1">
                   <span>Minimum Threshold: <strong className="text-amber-400 font-mono">{selectedProduct.minThreshold} {selectedProduct.uom}</strong></span>
-                  <span>Target Stock: <strong className="text-indigo-400 font-mono">{selectedProduct.idealStock} {selectedProduct.uom}</strong></span>
+                  <span>Target Stock: <strong className="text-[#AD543C] font-mono">{selectedProduct.idealStock} {selectedProduct.uom}</strong></span>
                 </div>
               </div>
 
               {/* STOCK AVAILABILITY PER LOCATION (Table) */}
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3">
-                  <Building className="w-4 h-4 text-indigo-400" />
+                  <Building className="w-4 h-4 text-[#AD543C]" />
                   <span>Stock Availability per Location</span>
                 </h3>
 
                 {selectedProduct.stockLevels.length === 0 ? (
-                  <div className="p-6 rounded-xl bg-slate-900/40 border border-white/5 text-center text-xs text-slate-400">
+                  <div className="p-6 rounded-xl bg-slate-900/40 border border-[#C3B4AA]/8 text-center text-xs text-[#988879]">
                     No physical stock recorded in any sub-location yet. Allocate stock using the quick form below.
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-white/5 overflow-hidden">
+                  <div className="rounded-xl border border-[#C3B4AA]/8 overflow-hidden">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
-                        <tr className="bg-slate-900 border-b border-white/10 text-slate-400 font-semibold uppercase tracking-wider">
+                        <tr className="bg-[#2e2823] border-b border-[#C3B4AA]/12 text-[#988879] font-semibold uppercase tracking-wider">
                           <th className="py-2.5 px-3">Warehouse</th>
                           <th className="py-2.5 px-3">Sub-Location / Bay</th>
                           <th className="py-2.5 px-3">Type</th>
                           <th className="py-2.5 px-3 text-right">Available Qty</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5 bg-slate-950/40">
-                        {selectedProduct.stockLevels.map((sl) => (
-                          <tr key={sl.id} className="hover:bg-white/[0.02]">
-                            <td className="py-2.5 px-3 text-white font-medium flex items-center gap-1.5">
-                              <WarehouseIcon className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                              <span>{sl.warehouseName}</span>
-                            </td>
-                            <td className="py-2.5 px-3">
-                              <span className="font-semibold text-indigo-300">{sl.locationName}</span>
-                              <span className="text-[10px] text-slate-500 ml-1 font-mono">({sl.locationCode})</span>
-                            </td>
-                            <td className="py-2.5 px-3">
-                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 uppercase">
-                                {sl.locationType}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3 text-right font-mono font-bold text-sm text-emerald-400">
-                              {sl.quantity} {selectedProduct.uom}
-                            </td>
-                          </tr>
-                        ))}
+                      <tbody className="divide-y divide-white/5 bg-[#1a1614]/40">
+                        {selectedProduct.stockLevels.map((sl: any) => {
+                          const whName = sl.warehouseName || sl.location?.warehouse?.name || "Warehouse";
+                          const locName = sl.locationName || sl.location?.name || "Location";
+                          const locCode = sl.locationCode || sl.location?.code || "";
+                          const locType = sl.locationType || sl.location?.type || "STOCK";
+                          return (
+                            <tr key={sl.id} className="hover:bg-white/[0.02]">
+                              <td className="py-2.5 px-3 text-white font-medium flex items-center gap-1.5">
+                                <WarehouseIcon className="w-3.5 h-3.5 text-[#6E655C] shrink-0" />
+                                <span>{whName}</span>
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <span className="font-semibold text-[#e0a08a]">{locName}</span>
+                                {locCode ? (
+                                  <span className="text-[10px] text-[#6E655C] ml-1 font-mono">({locCode})</span>
+                                ) : null}
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#584D44] text-[#C3B4AA] uppercase">
+                                  {locType}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 text-right font-mono font-bold text-sm text-emerald-400">
+                                {sl.quantity} {selectedProduct.uom}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -911,15 +924,15 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               </div>
 
               {/* Quick Stock Adjustment per Location */}
-              <div className="p-4 rounded-xl bg-slate-900/70 border border-white/5 space-y-3">
+              <div className="p-4 rounded-xl bg-[#2e2823]/70 border border-[#C3B4AA]/8 space-y-3">
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-indigo-400" />
+                  <ArrowUpDown className="w-3.5 h-3.5 text-[#AD543C]" />
                   <span>Adjust Stock at Location</span>
                 </h4>
 
                 <form onSubmit={handleLocationStockAdjust} className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] text-slate-400 mb-1">Target Sub-Location</label>
+                    <label className="block text-[11px] text-[#988879] mb-1">Target Sub-Location</label>
                     <select
                       value={adjustLocationId}
                       onChange={(e) => setAdjustLocationId(e.target.value)}
@@ -934,7 +947,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">Action</label>
+                    <label className="block text-[11px] text-[#988879] mb-1">Action</label>
                     <select
                       value={adjustOp}
                       onChange={(e) => setAdjustOp(e.target.value as any)}
@@ -947,7 +960,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">Quantity</label>
+                    <label className="block text-[11px] text-[#988879] mb-1">Quantity</label>
                     <div className="flex gap-1.5">
                       <input
                         type="number"
@@ -960,7 +973,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                       <button
                         type="submit"
                         disabled={actionLoading}
-                        className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shrink-0"
+                        className="px-3 py-2 rounded-lg bg-[#AD543C] hover:bg-[#c06244] text-white font-semibold shrink-0"
                       >
                         Apply
                       </button>
@@ -970,13 +983,13 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               </div>
             </div>
 
-            <div className="p-4 border-t border-white/10 flex items-center justify-between text-xs">
-              <span className="text-slate-500">
+            <div className="p-4 border-t border-[#C3B4AA]/12 flex items-center justify-between text-xs">
+              <span className="text-[#6E655C]">
                 Created: {new Date(selectedProduct.createdAt).toLocaleDateString()}
               </span>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium"
+                className="px-4 py-2 rounded-xl bg-[#584D44] hover:bg-[#6E655C] text-white font-medium"
               >
                 Close View
               </button>
@@ -990,20 +1003,20 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
       {/* ============================================================== */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative">
-            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+          <div className="glass-panel w-full max-w-xl rounded-2xl border border-[#C3B4AA]/12 shadow-2xl overflow-hidden relative">
+            <div className="p-5 border-b border-[#C3B4AA]/12 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <div className="p-2 rounded-xl bg-[#AD543C]/10 text-[#AD543C]">
                   <Package className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">Create New Catalog Product</h3>
-                  <p className="text-xs text-slate-400">Add item, UoM, reordering rules, and initial location stock</p>
+                  <p className="text-xs text-[#988879]">Add item, UoM, reordering rules, and initial location stock</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-[#988879] hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1012,7 +1025,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
             <form onSubmit={handleCreateSubmit} className="p-6 space-y-4 text-xs max-h-[75vh] overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">
                     Product Name <span className="text-rose-400">*</span>
                   </label>
                   <input
@@ -1021,12 +1034,12 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     placeholder="e.g. Servo Motor 48V"
-                    className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-slate-500"
+                    className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-[#6E655C]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">
                     SKU / Unique Code <span className="text-rose-400">*</span>
                   </label>
                   <input
@@ -1035,14 +1048,14 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                     value={formSku}
                     onChange={(e) => setFormSku(e.target.value.toUpperCase())}
                     placeholder="e.g. SKU-8820"
-                    className="glass-input w-full px-3 py-2 rounded-xl text-white font-mono placeholder-slate-500 uppercase"
+                    className="glass-input w-full px-3 py-2 rounded-xl text-white font-mono placeholder-[#6E655C] uppercase"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">
                     Category <span className="text-rose-400">*</span>
                   </label>
                   <select
@@ -1059,7 +1072,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Unit of Measure (UoM)</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Unit of Measure (UoM)</label>
                   <select
                     value={formUom}
                     onChange={(e) => setFormUom(e.target.value)}
@@ -1075,25 +1088,25 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Barcode / EAN</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Barcode / EAN</label>
                   <input
                     type="text"
                     value={formBarcode}
                     onChange={(e) => setFormBarcode(e.target.value)}
                     placeholder="890123456..."
-                    className="glass-input w-full px-3 py-2 rounded-xl text-white font-mono placeholder-slate-500"
+                    className="glass-input w-full px-3 py-2 rounded-xl text-white font-mono placeholder-[#6E655C]"
                   />
                 </div>
               </div>
 
               {/* Reordering Rules Section */}
-              <div className="p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/20 space-y-3">
-                <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-wider block">
+              <div className="p-3.5 rounded-xl bg-[#3a1f16]/20 border border-[#AD543C]/20 space-y-3">
+                <span className="text-[11px] font-bold text-[#e0a08a] uppercase tracking-wider block">
                   Reordering Rules &amp; Inventory Thresholds
                 </span>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-300 font-medium mb-1">
+                    <label className="block text-[#C3B4AA] font-medium mb-1">
                       Min Threshold (Alert Level) <span className="text-rose-400">*</span>
                     </label>
                     <input
@@ -1104,13 +1117,13 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                       onChange={(e) => setFormMinThreshold(Number(e.target.value))}
                       className="glass-input w-full px-3 py-2 rounded-xl text-white font-mono"
                     />
-                    <span className="text-[10px] text-slate-500 mt-0.5 block">
+                    <span className="text-[10px] text-[#6E655C] mt-0.5 block">
                       Triggers low-stock warning when stock drops to or below this.
                     </span>
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-medium mb-1">Target / Ideal Stock</label>
+                    <label className="block text-[#C3B4AA] font-medium mb-1">Target / Ideal Stock</label>
                     <input
                       type="number"
                       min={0}
@@ -1118,7 +1131,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                       onChange={(e) => setFormIdealStock(Number(e.target.value))}
                       className="glass-input w-full px-3 py-2 rounded-xl text-white font-mono"
                     />
-                    <span className="text-[10px] text-slate-500 mt-0.5 block">
+                    <span className="text-[10px] text-[#6E655C] mt-0.5 block">
                       Desired restock quantity level.
                     </span>
                   </div>
@@ -1126,13 +1139,13 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               </div>
 
               {/* Initial Stock Allocation */}
-              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-3">
-                <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
+              <div className="p-3.5 rounded-xl bg-[#2e2823]/60 border border-[#C3B4AA]/8 space-y-3">
+                <span className="text-[11px] font-bold text-[#C3B4AA] uppercase tracking-wider block">
                   Initial Stock &amp; Location Allocation (Optional)
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-400 mb-1">Initial Quantity ({formUom})</label>
+                    <label className="block text-[#988879] mb-1">Initial Quantity ({formUom})</label>
                     <input
                       type="number"
                       min={0}
@@ -1142,7 +1155,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Assign to Sub-Location</label>
+                    <label className="block text-[#988879] mb-1">Assign to Sub-Location</label>
                     <select
                       value={formInitialLocationId}
                       onChange={(e) => setFormInitialLocationId(e.target.value)}
@@ -1161,7 +1174,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               {/* Pricing & Description */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Cost Price ($)</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Cost Price ($)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -1173,7 +1186,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Selling / Value Price ($)</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Selling / Value Price ($)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -1187,28 +1200,28 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Description</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Description</label>
                 <textarea
                   rows={2}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   placeholder="Optional engineering notes or warehouse handling specs..."
-                  className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-slate-500 resize-none"
+                  className="glass-input w-full px-3 py-2 rounded-xl text-white placeholder-[#6E655C] resize-none"
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-[#C3B4AA]/12 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                  className="px-4 py-2.5 rounded-xl bg-[#584D44] hover:bg-[#6E655C] text-[#C3B4AA] text-xs font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white text-xs font-semibold shadow-lg shadow-[#AD543C]/30 flex items-center gap-2"
                 >
                   {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                   <span>Save Product to Catalog</span>
@@ -1224,20 +1237,20 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
       {/* ============================================================== */}
       {showEditModal && selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative">
-            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+          <div className="glass-panel w-full max-w-xl rounded-2xl border border-[#C3B4AA]/12 shadow-2xl overflow-hidden relative">
+            <div className="p-5 border-b border-[#C3B4AA]/12 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <div className="p-2 rounded-xl bg-[#AD543C]/10 text-[#AD543C]">
                   <Edit2 className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">Edit Product</h3>
-                  <p className="text-xs text-slate-400">Modify SKU, naming, category, or reordering rules</p>
+                  <p className="text-xs text-[#988879]">Modify SKU, naming, category, or reordering rules</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-[#988879] hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1246,7 +1259,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
             <form onSubmit={handleEditSubmit} className="p-6 space-y-4 text-xs max-h-[75vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Product Name</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Product Name</label>
                   <input
                     type="text"
                     required
@@ -1256,7 +1269,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">SKU Code</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">SKU Code</label>
                   <input
                     type="text"
                     required
@@ -1269,7 +1282,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Category</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Category</label>
                   <select
                     value={formCategoryId}
                     onChange={(e) => setFormCategoryId(e.target.value)}
@@ -1284,7 +1297,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Unit of Measure (UoM)</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Unit of Measure (UoM)</label>
                   <select
                     value={formUom}
                     onChange={(e) => setFormUom(e.target.value)}
@@ -1300,7 +1313,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Barcode</label>
+                  <label className="block text-[#C3B4AA] font-semibold mb-1">Barcode</label>
                   <input
                     type="text"
                     value={formBarcode}
@@ -1310,9 +1323,9 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/20 grid grid-cols-2 gap-3">
+              <div className="p-3.5 rounded-xl bg-[#3a1f16]/20 border border-[#AD543C]/20 grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Min Threshold (Alert Level)</label>
+                  <label className="block text-[#C3B4AA] font-medium mb-1">Min Threshold (Alert Level)</label>
                   <input
                     type="number"
                     min={0}
@@ -1323,7 +1336,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Target / Ideal Stock</label>
+                  <label className="block text-[#C3B4AA] font-medium mb-1">Target / Ideal Stock</label>
                   <input
                     type="number"
                     min={0}
@@ -1335,7 +1348,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Description</label>
+                <label className="block text-[#C3B4AA] font-semibold mb-1">Description</label>
                 <textarea
                   rows={2}
                   value={formDescription}
@@ -1344,18 +1357,18 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-[#C3B4AA]/12 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                  className="px-4 py-2.5 rounded-xl bg-[#584D44] hover:bg-[#6E655C] text-[#C3B4AA] text-xs font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+                  className="px-5 py-2.5 rounded-xl bg-[#AD543C] hover:bg-[#c06244] text-white text-xs font-semibold"
                 >
                   {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                   <span>Update Product</span>
@@ -1378,13 +1391,13 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Delete Product</h3>
-                <p className="text-xs text-slate-400">This action will remove the product and location stock levels.</p>
+                <p className="text-xs text-[#988879]">This action will remove the product and location stock levels.</p>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-white/5 text-xs text-slate-300 mb-5">
+            <div className="p-3 rounded-xl bg-[#2e2823]/80 border border-[#C3B4AA]/8 text-xs text-[#C3B4AA] mb-5">
               Are you sure you want to remove <strong className="text-white">{selectedProduct.name}</strong> (
-              <span className="font-mono text-indigo-400">{selectedProduct.sku}</span>)?
+              <span className="font-mono text-[#AD543C]">{selectedProduct.sku}</span>)?
               {selectedProduct.totalStock > 0 && (
                 <p className="text-rose-400 font-semibold mt-2">
                   ⚠️ Warning: There are currently {selectedProduct.totalStock} {selectedProduct.uom} recorded across locations!
@@ -1396,7 +1409,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium"
+                className="px-4 py-2 rounded-xl bg-[#584D44] hover:bg-[#6E655C] text-[#C3B4AA] text-xs font-medium"
               >
                 Cancel
               </button>

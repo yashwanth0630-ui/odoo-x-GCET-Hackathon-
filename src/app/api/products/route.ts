@@ -39,18 +39,31 @@ export async function GET(req: NextRequest) {
       orderBy: { name: "asc" },
     });
 
-    // Calculate total stock for each product
+    // Calculate total stock and enrich products with location and category info
     const enrichedProducts = products.map((p) => {
       const totalStock = p.stockLevels.reduce((acc, sl) => acc + sl.quantity, 0);
       return {
         ...p,
+        categoryName: p.category?.name || "General",
+        categoryCode: p.category?.code || "GEN",
         totalStock,
+        isLowStock: totalStock <= p.minThreshold,
+        isCritical: totalStock === 0,
         stockStatus:
           totalStock === 0
             ? "OUT_OF_STOCK"
             : totalStock <= p.minThreshold
             ? "LOW_STOCK"
             : "IN_STOCK",
+        stockLevels: p.stockLevels.map((sl: any) => ({
+          ...sl,
+          locationName: sl.location?.name || "Location",
+          locationCode: sl.location?.code || "",
+          locationType: sl.location?.type || "STOCK",
+          warehouseId: sl.location?.warehouseId || sl.location?.warehouse?.id || "",
+          warehouseName: sl.location?.warehouse?.name || "Warehouse",
+          warehouseCode: sl.location?.warehouse?.code || "",
+        })),
       };
     });
 
