@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Overview & Task 1 Architecture
+## 🚀 Overview & Architecture
 
 StockSense is an enterprise-grade modular Inventory Management System designed to eliminate paper logbooks, reconcile stock balances across facilities in real time, and enforce strict Role-Based Access Control (RBAC).
 
@@ -18,23 +18,27 @@ StockSense is an enterprise-grade modular Inventory Management System designed t
 
 ---
 
-## 🛡️ Database Schema (Users & Roles)
+## 🛡️ Database Schema
 
 The database schema is defined in [prisma/schema.prisma](file:///c:/Users/SafetyProtocol/Desktop/odoo%20x%20GCET/prisma/schema.prisma) with production PostgreSQL schema in [prisma/schema.postgresql.prisma](file:///c:/Users/SafetyProtocol/Desktop/odoo%20x%20GCET/prisma/schema.postgresql.prisma).
 
 ```mermaid
 erDiagram
-    ROLE ||--o{ USER : assigns
-    USER ||--o{ SESSION : owns
-    USER ||--o{ PASSWORD_RESET_OTP : requests
-    USER ||--o{ AUDIT_LOG : generates
+    ROLE ||--o{ USER : classifies
+    USER ||--o{ SESSION : establishes
+    USER ||--o{ PASSWORD_RESET_OTP : generates
+    USER ||--o{ AUDIT_LOG : tracks
+    CATEGORY ||--o{ PRODUCT : categorizes
+    WAREHOUSE ||--o{ LOCATION : contains
+    PRODUCT ||--o{ STOCK_LEVEL : stocks
+    LOCATION ||--o{ STOCK_LEVEL : stores
 
     ROLE {
         string id PK
         string name UK "INVENTORY_MANAGER | WAREHOUSE_STAFF"
         string label
         string description
-        string permissions "JSON granular list"
+        string permissions "JSON list"
     }
 
     USER {
@@ -51,71 +55,80 @@ erDiagram
         datetime updatedAt
     }
 
-    SESSION {
+    WAREHOUSE {
         string id PK
-        string token UK
-        string userId FK
-        datetime expiresAt
-        string ipAddress
-        string userAgent
-        datetime createdAt
+        string name UK
+        string code UK "CDC-01, FHE-02"
+        string address
     }
 
-    PASSWORD_RESET_OTP {
+    LOCATION {
         string id PK
-        string userId FK
-        string otpHash "SHA-256"
-        datetime expiresAt "10 mins"
-        boolean used
-        int attempts "max 5"
-        datetime createdAt
+        string name "Rack A, Bay 12, Shelf 04"
+        string code "CDC-RACK-A"
+        string type "STORAGE, RECEIVING, DISPATCH, QUARANTINE"
+        string warehouseId FK
     }
 
-    AUDIT_LOG {
+    CATEGORY {
         string id PK
-        string userId FK
-        string action
-        string details "JSON"
-        string ipAddress
-        datetime createdAt
+        string name UK
+        string code UK
+        string description
+    }
+
+    PRODUCT {
+        string id PK
+        string name
+        string sku UK "Unique Code"
+        string barcode
+        string uom "Units, Kg, Meters, Boxes, etc."
+        int initialStock
+        int minThreshold "Reordering Rule"
+        int idealStock
+        float costPrice
+        float sellingPrice
+        string categoryId FK
+    }
+
+    STOCK_LEVEL {
+        string id PK
+        string productId FK
+        string locationId FK
+        int quantity "On-hand count per location"
     }
 ```
 
-### Roles Supported:
-1. **Inventory Manager (`INVENTORY_MANAGER`)**
-   - Full oversight across all regional warehouses and distribution centers
-   - Inventory adjustments, stock requisitions, and catalog control
-   - Audit trail inspection and valuation reports
-   - Team and permissions management
-2. **Warehouse Staff (`WAREHOUSE_STAFF`)**
-   - Operational floor execution replacing paper registers
-   - Barcode scanning for intake receipts & dispatch pickups
-   - Physical cycle counts and damaged item quarantine
+---
+
+## 📦 Task 2: Product & Location Management
+
+### 1. Data Models
+- **`Warehouse`:** Regional physical facilities (e.g. *Central Distribution Center (HQ)*, *Fulfillment Hub East*).
+- **`Location`:** Sub-locations within each warehouse (e.g. *Rack A - High Velocity*, *Rack B - Heavy Components*, *Bay 12 - Bulk Staging*, *Shelf 04 - Micro-Electronics*).
+- **`Category`:** Product hierarchy (*Drive & Automation*, *Mechanical Bearings*, *Network & Telemetry*, *Pneumatics & Fluid Power*, *Sensors & Relays*).
+- **`Product`:** Catalog items with Name, SKU/Code, Category relation, Unit of Measure (UoM), Initial Stock, and Reordering Rules (`minThreshold`).
+- **`StockLevel`:** Multi-location inventory balances connecting `Product` and `Location` to track real-time stock availability per bay/rack.
+
+### 2. Products UI & API Features ([/products](file:///c:/Users/SafetyProtocol/Desktop/odoo%20x%20GCET/src/app/products/page.tsx))
+- **Smart Search Bar:** Instant reactive filtering across SKU, Product Name, and Barcode.
+- **Taxonomy Filtering:** Filter by Category dropdown and Stock Status (All, Low Stock Warning, In Stock).
+- **Stock Availability per Location Modal:** Inspect the exact breakdown of on-hand inventory across warehouse racks with an automated Reorder Rule Health Meter and inline location stock adjustment.
+- **Full CRUD Operations:**
+  - **Create (`POST /api/products`):** Modal with Name, SKU, Category, UoM, Reordering Min Threshold, and Initial Stock allocated to a specific sub-location.
+  - **Read (`GET /api/products`, `GET /api/products/[id]`):** Aggregated stock view with multi-location cards.
+  - **Update (`PUT /api/products/[id]`):** Modify attributes, pricing, and reorder levels.
+  - **Delete (`DELETE /api/products/[id]`):** Safe deletion with stock level cleanup.
+  - **Location Adjust (`POST /api/products/[id]/stock`):** Real-time adjustment per sub-location.
 
 ---
 
-## 🔐 Authentication & Security Implementation
+## 🔐 Authentication & Security
 
-1. **User Sign Up (`POST /api/auth/signup`)**
-   - Form fields: Name, Email, Password (min 8 chars), Role (`INVENTORY_MANAGER` or `WAREHOUSE_STAFF`), Department, Assigned Warehouse Hub
-   - Validates email format, checks for duplicates, hashes password with `bcryptjs` (salt rounds: 10)
-   - Issues JWT session cookie and automatically redirects to `/dashboard`
-
-2. **User Log In (`POST /api/auth/login`)**
-   - Verifies credentials, checks `isActive` flag
-   - Issues Edge-compatible JWT in an `HTTP-Only`, `SameSite=Lax` cookie (`stocksense_session`)
-   - Persists session in database table for centralized revocation
-   - Redirects to `/dashboard` upon success
-
-3. **OTP-Based Password Reset Flow**
-   - **Step 1 - Request OTP (`POST /api/auth/forgot-password`):** Generates cryptographically secure 6-digit numeric OTP, hashes with SHA-256, sets 10-minute expiry, and logs code.
-   - **Step 2 - Verify OTP (`POST /api/auth/verify-otp`):** Validates code, tracks invalid attempts (invalidates after 5 bad tries to prevent brute-force attacks).
-   - **Step 3 - Reset Password (`POST /api/auth/reset-password`):** Hashes new password, updates user record, marks OTP as used, and invalidates all existing user sessions in a Prisma transaction.
-
-4. **Middleware Route Protection ([src/middleware.ts](file:///c:/Users/SafetyProtocol/Desktop/odoo%20x%20GCET/src/middleware.ts))**
-   - Intercepts requests to `/dashboard/*`
-   - Redirects unauthenticated users to `/auth/login?redirect=/dashboard`
-   - Redirects authenticated users from `/auth/login` to `/dashboard`
+1. **User Sign Up (`POST /api/auth/signup`):** Role assignment (`INVENTORY_MANAGER` vs `WAREHOUSE_STAFF`), bcrypt hashing, session cookie issuance, redirect to `/dashboard`.
+2. **User Log In (`POST /api/auth/login`):** Validates credentials, issues Edge-compatible JWT in an HTTP-Only secure cookie (`stocksense_session`).
+3. **OTP-Based Password Reset Flow (`/auth/forgot-password`):** 3-step flow (Request OTP with 10-minute expiry -> Verify 6-digit code -> Update password & revoke sessions).
+4. **Middleware Protection (`src/middleware.ts`):** Secures `/dashboard` and `/products`.
 
 ---
 
@@ -126,47 +139,27 @@ erDiagram
 | **Inventory Manager** | `manager@stocksense.io` | `Manager123!` | Central Distribution Center (HQ) |
 | **Warehouse Staff** | `staff@stocksense.io` | `Staff123!` | Fulfillment Hub East - Bay 12 |
 
-*(Fast-fill buttons are provided directly on the Login screen for instant one-click testing)*
-
 ---
 
-## 🛠️ Getting Started
+## 🛠️ Getting Started & Testing
 
-### 1. Install Dependencies
+### 1. Database Setup & Seed
 ```bash
-npm install
-```
-
-### 2. Database Setup & Seed
-```bash
-# Push Prisma schema to database (SQLite by default, or PostgreSQL via .env)
 npm run db:push
-
-# Seed default roles and demo users
 npm run db:seed
 ```
 
-### 3. Run Development Server
+### 2. Run Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
-### 4. Run Automated Test Suite
+### 3. Run Automated Integration Test Suites
 ```bash
+# Task 1: Auth & Role Suite (24 tests)
 npx tsx scripts/test-auth.ts
-```
 
-### 5. PostgreSQL Production Setup (Optional)
-To use Docker PostgreSQL:
-```bash
-docker compose up -d
-```
-Update `DATABASE_URL` in `.env`:
-```env
-DATABASE_URL="postgresql://stocksense_admin:stocksense_secure_pass_2026@localhost:5432/stocksense_ims?schema=public"
-```
-And run:
-```bash
-npx prisma db push --schema=prisma/schema.postgresql.prisma
+# Task 2: Products, Locations & CRUD Suite (29 tests)
+npx tsx scripts/test-products.ts
 ```

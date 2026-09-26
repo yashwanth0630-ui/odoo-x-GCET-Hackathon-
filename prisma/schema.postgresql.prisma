@@ -86,3 +86,86 @@ model AuditLog {
   @@index([action])
   @@map("audit_logs")
 }
+
+// -------------------------------------------------------------
+// TASK 2: PRODUCT & LOCATION MANAGEMENT MODELS (PostgreSQL)
+// -------------------------------------------------------------
+
+model Warehouse {
+  id          String     @id @default(cuid())
+  name        String     @unique // e.g. "Central Distribution Center (HQ)"
+  code        String     @unique // e.g. "CDC-01"
+  address     String?
+  locations   Location[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("warehouses")
+}
+
+model Location {
+  id          String       @id @default(cuid())
+  name        String       // e.g. "Rack A", "Rack B", "Bay 12", "Shelf 04"
+  code        String       // e.g. "CDC-RACK-A"
+  type        String       @default("STORAGE") // STORAGE, RECEIVING, DISPATCH, QUARANTINE
+  warehouseId String
+  warehouse   Warehouse    @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  stockLevels StockLevel[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([warehouseId, code])
+  @@index([warehouseId])
+  @@map("locations")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique // e.g. "Drive & Automation", "Mechanical Components"
+  code        String    @unique // e.g. "DRV-AUTO"
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model Product {
+  id            String       @id @default(cuid())
+  name          String
+  sku           String       @unique // SKU or Code
+  barcode       String?
+  description   String?
+  categoryId    String
+  category      Category     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  uom           String       @default("Units") // Unit of Measure
+  initialStock  Int          @default(0) // Initial stock reference
+  minThreshold  Int          @default(10) // Reordering Rules: minimum threshold
+  idealStock    Int          @default(50) // Reordering target
+  costPrice     Float?
+  sellingPrice  Float?
+  stockLevels   StockLevel[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([categoryId])
+  @@index([sku])
+  @@index([name])
+  @@map("products")
+}
+
+model StockLevel {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  quantity   Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@unique([productId, locationId])
+  @@index([productId])
+  @@index([locationId])
+  @@map("stock_levels")
+}

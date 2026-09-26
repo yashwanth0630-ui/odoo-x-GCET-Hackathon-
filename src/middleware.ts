@@ -19,8 +19,8 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
   const hasValidSession = token ? await isValidToken(token) : false;
 
-  // Protected routes: /dashboard and subroutes
-  if (pathname.startsWith("/dashboard")) {
+  // Protected routes: /dashboard, /products and subroutes
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/products")) {
     if (!hasValidSession) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("redirect", pathname);
@@ -41,6 +41,7 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/products/:path*",
     "/auth/login",
     "/auth/signup",
   ],
