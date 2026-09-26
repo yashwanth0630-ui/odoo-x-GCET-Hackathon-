@@ -37,6 +37,13 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required to apply stock adjustments." },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
 
     const { productId, locationId, countedQuantity, reason } = body;

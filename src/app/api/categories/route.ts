@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -33,6 +34,21 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required to create categories." },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "INVENTORY_MANAGER") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: Only Inventory Managers can create categories." },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { name, code, description } = body;
 

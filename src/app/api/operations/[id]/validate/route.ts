@@ -10,6 +10,13 @@ interface RouteParams {
 export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required to validate operational documents." },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
 
     const doc = await prisma.operationDocument.findUnique({
@@ -106,7 +113,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
           }
 
           // Decrease stock in source location
-          await tx.stockLevel.update({
+          const updatedStock = await tx.stockLevel.update({
             where: {
               productId_locationId: {
                 productId: item.productId,
@@ -117,6 +124,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
               quantity: { decrement: item.quantity },
             },
           });
+
+          // Atomic underflow guard: ensure stock did not become negative
+          if (updatedStock.quantity < 0) {
+            throw new Error(
+              `Insufficient stock for '${item.product.name}' at ${doc.sourceLocation?.name}. Operation would result in negative balance (${updatedStock.quantity}).`
+            );
+          }
 
           // Insert centralized Stock Ledger record
           await tx.stockMovement.create({
@@ -135,7 +149,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       }
 
       // 3. INTERNAL TRANSFER
-      else if (doc.type === "INTERNAL_TRANSFER") {
+      else if (doc.type === "INTERNAL_TRANSFER" || doc.type === "INTERNAL") {
         const srcLocId = doc.sourceLocationId!;
         const destLocId = doc.destinationLocationId!;
 
@@ -159,7 +173,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
           }
 
           // Deduct from source location
-          await tx.stockLevel.update({
+          const sourceStock = await tx.stockLevel.update({
             where: {
               productId_locationId: {
                 productId: item.productId,
@@ -170,6 +184,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
               quantity: { decrement: item.quantity },
             },
           });
+
+          // Atomic underflow guard: ensure transfer did not breach zero balance
+          if (sourceStock.quantity < 0) {
+            throw new Error(
+              `Insufficient stock for '${item.product.name}' at source location ${doc.sourceLocation?.name}. Transfer would result in negative balance (${sourceStock.quantity}).`
+            );
+          }
 
           // Add to destination location
           await tx.stockLevel.upsert({

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+import { logAuthEvent } from "@/lib/audit";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -65,6 +67,21 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required to delete operational documents." },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "INVENTORY_MANAGER") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: Only Inventory Managers can delete operational documents." },
+        { status: 403 }
+      );
+    }
+
     const { id } = await params;
 
     const document = await prisma.operationDocument.findUnique({
@@ -87,6 +104,12 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 
     await prisma.operationDocument.delete({
       where: { id },
+    });
+
+    await logAuthEvent("OPERATION_DOCUMENT_DELETED", user.id, {
+      documentId: id,
+      referenceNumber: document.referenceNumber,
+      type: document.type,
     });
 
     return NextResponse.json({

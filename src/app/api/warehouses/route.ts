@@ -30,6 +30,20 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required to configure warehouses." },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "INVENTORY_MANAGER") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: Only Inventory Managers can configure warehouses and locations." },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
 
     const { action, warehouseName, warehouseCode, address, locationName, locationCode, locationType, warehouseId } = body;

@@ -27,32 +27,46 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const movements = await prisma.stockMovement.findMany({
-      where,
-      include: {
-        product: {
-          include: { category: true },
+    const rawLimit = searchParams.get("limit");
+    const isAll = rawLimit === "ALL";
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = isAll ? 500 : Math.min(200, Math.max(1, Number(rawLimit) || 50));
+    const skip = isAll ? 0 : (page - 1) * limit;
+
+    const [movements, totalCount] = await Promise.all([
+      prisma.stockMovement.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          product: {
+            include: { category: true },
+          },
+          sourceLocation: {
+            include: { warehouse: true },
+          },
+          destinationLocation: {
+            include: { warehouse: true },
+          },
+          operator: {
+            select: { name: true, email: true },
+          },
+          document: {
+            select: { referenceNumber: true, type: true, partnerName: true },
+          },
         },
-        sourceLocation: {
-          include: { warehouse: true },
-        },
-        destinationLocation: {
-          include: { warehouse: true },
-        },
-        operator: {
-          select: { name: true, email: true },
-        },
-        document: {
-          select: { referenceNumber: true, type: true, partnerName: true },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.stockMovement.count({ where }),
+    ]);
 
     return NextResponse.json({
       success: true,
       movements,
-      totalCount: movements.length,
+      totalCount,
+      page,
+      limit,
+      totalPages: Math.ceil(totalCount / limit) || 1,
     });
   } catch (error) {
     console.error("Error fetching stock ledger:", error);

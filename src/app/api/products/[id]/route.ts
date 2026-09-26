@@ -84,6 +84,20 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 export async function PUT(req: NextRequest, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required to update products." },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "INVENTORY_MANAGER") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: Only Inventory Managers can update products." },
+        { status: 403 }
+      );
+    }
+
     const { id } = await params;
     const body = await req.json();
 
@@ -166,6 +180,20 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required to delete products." },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "INVENTORY_MANAGER") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: Only Inventory Managers can delete products." },
+        { status: 403 }
+      );
+    }
+
     const { id } = await params;
 
     const product = await prisma.product.findUnique({
@@ -193,8 +221,17 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       success: true,
       message: `Product ${product.name} (${product.sku}) deleted successfully.`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting product:", error);
+    if (error.code === "P2003") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Cannot delete this product because it has active stock movements or operational documents recorded in the ledger. Archive the product or adjust its stock to zero instead.",
+        },
+        { status: 409 }
+      );
+    }
     return NextResponse.json(
       { success: false, message: "Failed to delete product." },
       { status: 500 }
