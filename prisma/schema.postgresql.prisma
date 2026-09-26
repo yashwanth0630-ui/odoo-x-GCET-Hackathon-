@@ -23,21 +23,23 @@ model Role {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  email             String             @unique
-  passwordHash      String
-  name              String
-  roleId            String
-  role              Role               @relation(fields: [roleId], references: [id], onDelete: Restrict)
-  department        String?
-  warehouseLocation String?            // Assigned warehouse or zone
-  isActive          Boolean            @default(true)
-  lastLoginAt       DateTime?
-  sessions          Session[]
-  resetOtps         PasswordResetOtp[]
-  auditLogs         AuditLog[]
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  passwordHash       String
+  name               String
+  roleId             String
+  role               Role                @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  department         String?
+  warehouseLocation  String?             // Assigned warehouse or zone
+  isActive           Boolean             @default(true)
+  lastLoginAt        DateTime?
+  sessions           Session[]
+  resetOtps          PasswordResetOtp[]
+  auditLogs          AuditLog[]
+  operationDocuments OperationDocument[]
+  stockMovements     StockMovement[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@index([email])
   @@index([roleId])
@@ -88,7 +90,7 @@ model AuditLog {
 }
 
 // -------------------------------------------------------------
-// TASK 2: PRODUCT & LOCATION MANAGEMENT MODELS (PostgreSQL)
+// PRODUCT & LOCATION MANAGEMENT MODELS (PostgreSQL)
 // -------------------------------------------------------------
 
 model Warehouse {
@@ -104,15 +106,19 @@ model Warehouse {
 }
 
 model Location {
-  id          String       @id @default(cuid())
-  name        String       // e.g. "Rack A", "Rack B", "Bay 12", "Shelf 04"
-  code        String       // e.g. "CDC-RACK-A"
-  type        String       @default("STORAGE") // STORAGE, RECEIVING, DISPATCH, QUARANTINE
-  warehouseId String
-  warehouse   Warehouse    @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
-  stockLevels StockLevel[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id                  String              @id @default(cuid())
+  name                String              // e.g. "Rack A", "Rack B", "Bay 12", "Shelf 04"
+  code                String              // e.g. "CDC-RACK-A"
+  type                String              @default("STORAGE") // STORAGE, RECEIVING, DISPATCH, QUARANTINE
+  warehouseId         String
+  warehouse           Warehouse           @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  stockLevels         StockLevel[]
+  docSourceLocations  OperationDocument[] @relation("DocSourceLocation")
+  docDestLocations    OperationDocument[] @relation("DocDestLocation")
+  moveSourceLocations StockMovement[]     @relation("MoveSourceLocation")
+  moveDestLocations   StockMovement[]     @relation("MoveDestLocation")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
 
   @@unique([warehouseId, code])
   @@index([warehouseId])
@@ -121,8 +127,8 @@ model Location {
 
 model Category {
   id          String    @id @default(cuid())
-  name        String    @unique // e.g. "Drive & Automation", "Mechanical Components"
-  code        String    @unique // e.g. "DRV-AUTO"
+  name        String    @unique
+  code        String    @unique
   description String?
   products    Product[]
   createdAt   DateTime  @default(now())
@@ -132,22 +138,24 @@ model Category {
 }
 
 model Product {
-  id            String       @id @default(cuid())
-  name          String
-  sku           String       @unique // SKU or Code
-  barcode       String?
-  description   String?
-  categoryId    String
-  category      Category     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  uom           String       @default("Units") // Unit of Measure
-  initialStock  Int          @default(0) // Initial stock reference
-  minThreshold  Int          @default(10) // Reordering Rules: minimum threshold
-  idealStock    Int          @default(50) // Reordering target
-  costPrice     Float?
-  sellingPrice  Float?
-  stockLevels   StockLevel[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id             String          @id @default(cuid())
+  name           String
+  sku            String          @unique // SKU or Code
+  barcode        String?
+  description    String?
+  categoryId     String
+  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  uom            String          @default("Units")
+  initialStock   Int             @default(0)
+  minThreshold   Int             @default(10) // Reordering Rules: minimum threshold
+  idealStock     Int             @default(50) // Reordering target
+  costPrice      Float?
+  sellingPrice   Float?
+  stockLevels    StockLevel[]
+  operationItems OperationItem[]
+  stockMovements StockMovement[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@index([categoryId])
   @@index([sku])
@@ -168,4 +176,73 @@ model StockLevel {
   @@index([productId])
   @@index([locationId])
   @@map("stock_levels")
+}
+
+// -------------------------------------------------------------
+// TASKS 3, 4, 5: OPERATIONS & STOCK LEDGER (PostgreSQL)
+// -------------------------------------------------------------
+
+model OperationDocument {
+  id                    String          @id @default(cuid())
+  referenceNumber       String          @unique // e.g. "WH/IN/0001", "WH/OUT/0001", "WH/INT/0001", "INV/ADJ/0001"
+  type                  String          // "RECEIPT", "DELIVERY", "INTERNAL_TRANSFER", "ADJUSTMENT"
+  status                String          @default("DRAFT") // "DRAFT", "WAITING", "READY", "DONE", "CANCELED"
+  sourceLocationId      String?
+  sourceLocation        Location?       @relation("DocSourceLocation", fields: [sourceLocationId], references: [id], onDelete: SetNull)
+  destinationLocationId String?
+  destinationLocation   Location?       @relation("DocDestLocation", fields: [destinationLocationId], references: [id], onDelete: SetNull)
+  partnerName           String?         // Supplier or Customer
+  notes                 String?
+  createdById           String?
+  createdBy             User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  validatedAt           DateTime?
+  items                 OperationItem[]
+  stockMovements        StockMovement[]
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([referenceNumber])
+  @@map("operation_documents")
+}
+
+model OperationItem {
+  id         String            @id @default(cuid())
+  documentId String
+  document   OperationDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  quantity   Int
+  picked     Boolean           @default(false)
+  packed     Boolean           @default(false)
+
+  @@index([documentId])
+  @@index([productId])
+  @@map("operation_items")
+}
+
+model StockMovement {
+  id                    String             @id @default(cuid())
+  reference             String             // Ledger transaction ref
+  documentId            String?
+  document              OperationDocument? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  productId             String
+  product               Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+  sourceLocationId      String?
+  sourceLocation        Location?          @relation("MoveSourceLocation", fields: [sourceLocationId], references: [id], onDelete: SetNull)
+  destinationLocationId String?
+  destinationLocation   Location?          @relation("MoveDestLocation", fields: [destinationLocationId], references: [id], onDelete: SetNull)
+  quantity              Int                // Signed or absolute quantity
+  type                  String             // "INCOMING", "OUTGOING", "INTERNAL", "ADJUSTMENT"
+  reason                String?            // Reason / notes
+  operatorId            String?
+  operator              User?              @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  createdAt             DateTime           @default(now())
+
+  @@index([productId])
+  @@index([documentId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("stock_movements")
 }

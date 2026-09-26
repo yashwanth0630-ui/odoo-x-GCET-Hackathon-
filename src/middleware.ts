@@ -19,8 +19,13 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
   const hasValidSession = token ? await isValidToken(token) : false;
 
-  // Protected routes: /dashboard, /products and subroutes
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/products")) {
+  // Protected routes: /dashboard, /products, /operations, /settings and subroutes
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/products") ||
+    pathname.startsWith("/operations") ||
+    pathname.startsWith("/settings")
+  ) {
     if (!hasValidSession) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("redirect", pathname);
@@ -42,6 +47,8 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/products/:path*",
+    "/operations/:path*",
+    "/settings/:path*",
     "/auth/login",
     "/auth/signup",
   ],

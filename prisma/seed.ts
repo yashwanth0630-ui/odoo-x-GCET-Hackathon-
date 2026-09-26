@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding StockSense database (Users, Roles, Warehouses, Locations, Categories, Products)...");
+  console.log("🌱 Seeding StockSense database (Users, Roles, Warehouses, Locations, Categories, Products, Operations & Stock Ledger)...");
 
   // 1. Seed Roles
   const managerRole = await prisma.role.upsert({
@@ -20,6 +20,7 @@ async function main() {
         "inventory:adjust",
         "inventory:audit",
         "products:manage",
+        "operations:manage",
         "warehouses:manage",
         "users:read",
         "users:manage",
@@ -109,7 +110,7 @@ async function main() {
 
   console.log(`✅ Warehouses seeded: ${cdcWarehouse.name}, ${fheWarehouse.name}`);
 
-  // 4. Seed Sub-Locations (Racks, Bins, Docks, Bays)
+  // 4. Seed Sub-Locations
   const locRackA = await prisma.location.upsert({
     where: { warehouseId_code: { warehouseId: cdcWarehouse.id, code: "CDC-RACK-A" } },
     update: {},
@@ -218,9 +219,7 @@ async function main() {
     },
   });
 
-  console.log(`✅ Categories seeded.`);
-
-  // 6. Seed Products with Reordering Rules (minimum thresholds) & Stock Levels per Location
+  // 6. Seed Products
   const productsData = [
     {
       name: "Industrial Servo Motor 48V",
@@ -281,7 +280,7 @@ async function main() {
       categoryId: catPneumatics.id,
       uom: "Units",
       initialStock: 18,
-      minThreshold: 30, // CURRENT STOCK (18) IS BELOW THRESHOLD (30) -> LOW STOCK ALERT!
+      minThreshold: 30, // LOW STOCK ALERT
       idealStock: 80,
       costPrice: 65.0,
       sellingPrice: 110.0,
@@ -315,7 +314,7 @@ async function main() {
       categoryId: catDrive.id,
       uom: "Units",
       initialStock: 5,
-      minThreshold: 12, // CURRENT STOCK (5) IS BELOW THRESHOLD (12) -> CRITICAL LOW STOCK!
+      minThreshold: 12, // CRITICAL LOW STOCK
       idealStock: 35,
       costPrice: 140.0,
       sellingPrice: 240.0,
@@ -324,6 +323,8 @@ async function main() {
       ],
     },
   ];
+
+  const seededProducts: Record<string, any> = {};
 
   for (const item of productsData) {
     const product = await prisma.product.upsert({
@@ -352,6 +353,8 @@ async function main() {
       },
     });
 
+    seededProducts[item.sku] = product;
+
     for (const stock of item.stocks) {
       await prisma.stockLevel.upsert({
         where: {
@@ -372,20 +375,247 @@ async function main() {
     }
   }
 
-  console.log(`✅ Products and location stock levels seeded successfully.`);
+  console.log(`✅ Products seeded.`);
 
-  // 7. Seed Initial Audit Log
-  await prisma.auditLog.create({
-    data: {
-      action: "TASK2_INITIALIZED",
-      details: JSON.stringify({
-        message: "Warehouses, sub-locations, categories, and products with multi-location stock levels initialized.",
-        timestamp: new Date().toISOString(),
-      }),
+  // 7. Seed Operation Documents (Receipts, Deliveries, Internal Transfers, Adjustments)
+  // A. Receipt (Incoming Goods) - Validated
+  const receiptDoc = await prisma.operationDocument.upsert({
+    where: { referenceNumber: "WH/IN/0001" },
+    update: {},
+    create: {
+      referenceNumber: "WH/IN/0001",
+      type: "RECEIPT",
+      status: "DONE",
+      partnerName: "Kuka Robotics Supply Co.",
+      destinationLocationId: locRackA.id,
+      createdById: staffUser.id,
+      notes: "PO-9912 inbound supplier delivery",
+      validatedAt: new Date(Date.now() - 3 * 3600 * 1000),
+      items: {
+        create: [
+          {
+            productId: seededProducts["SKU-9921"].id,
+            quantity: 50,
+            picked: true,
+            packed: true,
+          },
+        ],
+      },
     },
   });
 
-  console.log("🚀 StockSense Task 2 database seeding complete!");
+  // Corresponding Stock Ledger Entry for Receipt
+  await prisma.stockMovement.upsert({
+    where: { id: "sm-init-rec-1" },
+    update: {},
+    create: {
+      id: "sm-init-rec-1",
+      reference: "WH/IN/0001",
+      documentId: receiptDoc.id,
+      productId: seededProducts["SKU-9921"].id,
+      destinationLocationId: locRackA.id,
+      quantity: 50,
+      type: "INCOMING",
+      reason: "Supplier receipt PO-9912 verified and placed into Rack A",
+      operatorId: staffUser.id,
+    },
+  });
+
+  // B. Delivery Order (Outgoing Goods) - Validated
+  const deliveryDoc = await prisma.operationDocument.upsert({
+    where: { referenceNumber: "WH/OUT/0001" },
+    update: {},
+    create: {
+      referenceNumber: "WH/OUT/0001",
+      type: "DELIVERY",
+      status: "DONE",
+      partnerName: "Apex Manufacturing Labs",
+      sourceLocationId: locRackB.id,
+      createdById: managerUser.id,
+      notes: "Sales Order SO-4402 - Priority freight dispatch",
+      validatedAt: new Date(Date.now() - 2 * 3600 * 1000),
+      items: {
+        create: [
+          {
+            productId: seededProducts["SKU-4402"].id,
+            quantity: 20,
+            picked: true,
+            packed: true,
+          },
+        ],
+      },
+    },
+  });
+
+  // Corresponding Stock Ledger Entry for Delivery
+  await prisma.stockMovement.upsert({
+    where: { id: "sm-init-del-1" },
+    update: {},
+    create: {
+      id: "sm-init-del-1",
+      reference: "WH/OUT/0001",
+      documentId: deliveryDoc.id,
+      productId: seededProducts["SKU-4402"].id,
+      sourceLocationId: locRackB.id,
+      quantity: -20,
+      type: "OUTGOING",
+      reason: "Dispatched to Apex Manufacturing Labs via FedEx Freight",
+      operatorId: managerUser.id,
+    },
+  });
+
+  // C. Internal Transfer - Validated (Dual ledger entries!)
+  const transferDoc = await prisma.operationDocument.upsert({
+    where: { referenceNumber: "WH/INT/0001" },
+    update: {},
+    create: {
+      referenceNumber: "WH/INT/0001",
+      type: "INTERNAL_TRANSFER",
+      status: "DONE",
+      sourceLocationId: locRackA.id,
+      destinationLocationId: locBay12.id,
+      createdById: staffUser.id,
+      notes: "Rebalance stock: High Velocity Rack A to Bulk Staging Bay 12",
+      validatedAt: new Date(Date.now() - 1 * 3600 * 1000),
+      items: {
+        create: [
+          {
+            productId: seededProducts["SKU-9921"].id,
+            quantity: 10,
+            picked: true,
+            packed: true,
+          },
+        ],
+      },
+    },
+  });
+
+  // Dual Ledger Entries for Internal Transfer
+  await prisma.stockMovement.upsert({
+    where: { id: "sm-init-int-out" },
+    update: {},
+    create: {
+      id: "sm-init-int-out",
+      reference: "WH/INT/0001-OUT",
+      documentId: transferDoc.id,
+      productId: seededProducts["SKU-9921"].id,
+      sourceLocationId: locRackA.id,
+      destinationLocationId: locBay12.id,
+      quantity: -10,
+      type: "INTERNAL",
+      reason: "Internal relocation outbound from Rack A",
+      operatorId: staffUser.id,
+    },
+  });
+
+  await prisma.stockMovement.upsert({
+    where: { id: "sm-init-int-in" },
+    update: {},
+    create: {
+      id: "sm-init-int-in",
+      reference: "WH/INT/0001-IN",
+      documentId: transferDoc.id,
+      productId: seededProducts["SKU-9921"].id,
+      sourceLocationId: locRackA.id,
+      destinationLocationId: locBay12.id,
+      quantity: +10,
+      type: "INTERNAL",
+      reason: "Internal relocation inbound to Bay 12",
+      operatorId: staffUser.id,
+    },
+  });
+
+  // D. Pending Operations for Dashboard Widgets
+  await prisma.operationDocument.upsert({
+    where: { referenceNumber: "WH/IN/0002" },
+    update: {},
+    create: {
+      referenceNumber: "WH/IN/0002",
+      type: "RECEIPT",
+      status: "WAITING",
+      partnerName: "Global Sensors Consortium",
+      destinationLocationId: locShelf04.id,
+      createdById: staffUser.id,
+      notes: "Incoming pallet arriving at 15:00",
+      items: {
+        create: [
+          {
+            productId: seededProducts["SKU-5501"].id,
+            quantity: 40,
+            picked: false,
+            packed: false,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.operationDocument.upsert({
+    where: { referenceNumber: "WH/OUT/0002" },
+    update: {},
+    create: {
+      referenceNumber: "WH/OUT/0002",
+      type: "DELIVERY",
+      status: "READY",
+      partnerName: "Cyberdyne Systems",
+      sourceLocationId: locShelf04.id,
+      createdById: managerUser.id,
+      notes: "Awaiting final shipping label scan",
+      items: {
+        create: [
+          {
+            productId: seededProducts["SKU-1088"].id,
+            quantity: 5,
+            picked: true,
+            packed: true,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.operationDocument.upsert({
+    where: { referenceNumber: "WH/INT/0002" },
+    update: {},
+    create: {
+      referenceNumber: "WH/INT/0002",
+      type: "INTERNAL_TRANSFER",
+      status: "READY",
+      sourceLocationId: locRackB.id,
+      destinationLocationId: locBay12.id,
+      createdById: staffUser.id,
+      notes: "Scheduled transfer of heavy actuators",
+      items: {
+        create: [
+          {
+            productId: seededProducts["SKU-3120"].id,
+            quantity: 2,
+            picked: true,
+            packed: false,
+          },
+        ],
+      },
+    },
+  });
+
+  // E. Stock Adjustment Entry
+  await prisma.stockMovement.upsert({
+    where: { id: "sm-init-adj-1" },
+    update: {},
+    create: {
+      id: "sm-init-adj-1",
+      reference: "INV/ADJ/0001",
+      productId: seededProducts["SKU-7731"].id,
+      sourceLocationId: locRackA.id,
+      quantity: -3,
+      type: "ADJUSTMENT",
+      reason: "Cycle count discrepancy: 3 units damaged due to moisture exposure",
+      operatorId: managerUser.id,
+    },
+  });
+
+  console.log(`✅ Operation documents and Centralized Stock Ledger seeded successfully.`);
+  console.log("🚀 StockSense Complete Seed Finished!");
 }
 
 main()

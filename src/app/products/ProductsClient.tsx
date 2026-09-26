@@ -25,7 +25,7 @@ import {
   DollarSign,
   Boxes,
 } from "lucide-react";
-import Navigation from "@/components/Navigation";
+import AppLayout from "@/components/AppLayout";
 
 interface Category {
   id: string;
@@ -436,9 +436,7 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#080c14] text-slate-100 flex flex-col">
-      {/* Navigation */}
-      <Navigation user={initialUser} />
+    <AppLayout user={initialUser}>
 
       {/* Toast Notification */}
       {notification && (
@@ -1415,6 +1413,6 @@ export default function ProductsClient({ initialUser }: ProductsClientProps) {
           </div>
         </div>
       )}
-    </div>
+    </AppLayout>
   );
 }
