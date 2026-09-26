@@ -3,64 +3,91 @@ import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { logAuthEvent } from "@/lib/audit";
 
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
-
-export async function POST(req: NextRequest, { params }: RouteParams) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Authentication required to validate operational documents." },
+        { success: false, message: "Authentication required." },
         { status: 401 }
       );
     }
 
     const { id } = await params;
 
-    const doc = await prisma.operationDocument.findUnique({
+    const document = await prisma.operationDocument.findUnique({
       where: { id },
       include: {
         items: {
-          include: { product: true },
+          include: {
+            product: true,
+          },
         },
-        sourceLocation: true,
-        destinationLocation: true,
+        sourceLocation: { include: { warehouse: true } },
+        destinationLocation: { include: { warehouse: true } },
       },
     });
 
-    if (!doc) {
-      return NextResponse.json({ success: false, message: "Document not found." }, { status: 404 });
+    if (!document) {
+      return NextResponse.json(
+        { success: false, message: "Operation document not found." },
+        { status: 404 }
+      );
     }
 
-    if (doc.status === "DONE") {
+    if (document.status === "DONE") {
       return NextResponse.json(
-        { success: false, message: "This operation has already been validated and posted to the Stock Ledger." },
+        { success: false, message: "Document already validated." },
         { status: 400 }
       );
     }
 
-    if (doc.status === "CANCELED") {
+    if (document.status === "CANCELED") {
       return NextResponse.json(
-        { success: false, message: "Cannot validate a canceled operation document." },
+        { success: false, message: "Cannot validate a canceled document." },
         { status: 400 }
       );
     }
 
-    // Run the validation inside an atomic database transaction
-    await prisma.$transaction(async (tx) => {
-      // 1. RECEIPT (INCOMING GOODS)
-      if (doc.type === "RECEIPT") {
-        const destLocId = doc.destinationLocationId!;
+    // For deliveries, ensure items are picked and packed
+    if (document.type === "DELIVERY") {
+      const unpickedItems = document.items.filter((item) => !item.picked);
+      const unpackedItems = document.items.filter((item) => !item.packed);
 
-        for (const item of doc.items) {
-          // Increase stock in destination location
+      if (unpickedItems.length > 0) {
+        return NextResponse.json(
+          { success: false, message: "All items must be picked before validation. Use the Pick action first." },
+          { status: 400 }
+        );
+      }
+
+      if (unpackedItems.length > 0) {
+        return NextResponse.json(
+          { success: false, message: "All items must be packed before validation. Use the Pack action first." },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Atomic transaction for stock movements
+    const result = await prisma.$transaction(async (tx) => {
+      const movements: any[] = [];
+
+      for (const item of document.items) {
+        if (document.type === "RECEIPT") {
+          // INCOMING: Increase stock at destination location
+          if (!document.destinationLocationId) {
+            throw new Error("Destination location required for receipts.");
+          }
+
           await tx.stockLevel.upsert({
             where: {
               productId_locationId: {
                 productId: item.productId,
-                locationId: destLocId,
+                locationId: document.destinationLocationId,
               },
             },
             update: {
@@ -68,56 +95,53 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
             },
             create: {
               productId: item.productId,
-              locationId: destLocId,
+              locationId: document.destinationLocationId,
               quantity: item.quantity,
             },
           });
 
-          // Insert centralized Stock Ledger record
-          await tx.stockMovement.create({
+          const movement = await tx.stockMovement.create({
             data: {
-              reference: doc.referenceNumber,
-              documentId: doc.id,
+              reference: document.referenceNumber,
+              documentId: document.id,
               productId: item.productId,
-              destinationLocationId: destLocId,
+              destinationLocationId: document.destinationLocationId,
               quantity: item.quantity,
               type: "INCOMING",
-              reason: `Receipt from ${doc.partnerName || "Supplier"} placed into ${doc.destinationLocation?.name}`,
-              operatorId: user?.id || null,
+              reason: `Received ${item.quantity} ${item.product.uom} of ${item.product.name}`,
+              operatorId: user.id,
             },
           });
-        }
-      }
+          movements.push(movement);
 
-      // 2. DELIVERY ORDER (OUTGOING GOODS)
-      else if (doc.type === "DELIVERY") {
-        const srcLocId = doc.sourceLocationId!;
+        } else if (document.type === "DELIVERY") {
+          // OUTGOING: Decrease stock at source location with underflow protection
+          if (!document.sourceLocationId) {
+            throw new Error("Source location required for deliveries.");
+          }
 
-        for (const item of doc.items) {
-          // Check stock availability
+          // Atomic underflow protection
           const currentStock = await tx.stockLevel.findUnique({
             where: {
               productId_locationId: {
                 productId: item.productId,
-                locationId: srcLocId,
+                locationId: document.sourceLocationId,
               },
             },
           });
 
-          if (!currentStock || currentStock.quantity < item.quantity) {
+          const currentQty = currentStock?.quantity || 0;
+          if (currentQty < item.quantity) {
             throw new Error(
-              `Insufficient stock for '${item.product.name}' at ${doc.sourceLocation?.name}. Available: ${
-                currentStock?.quantity || 0
-              }, Requested: ${item.quantity}`
+              `Insufficient stock for "${item.product.name}": available ${currentQty} ${item.product.uom}, requested ${item.quantity} ${item.product.uom}.`
             );
           }
 
-          // Decrease stock in source location
-          const updatedStock = await tx.stockLevel.update({
+          await tx.stockLevel.update({
             where: {
               productId_locationId: {
                 productId: item.productId,
-                locationId: srcLocId,
+                locationId: document.sourceLocationId,
               },
             },
             data: {
@@ -125,59 +149,49 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
             },
           });
 
-          // Atomic underflow guard: ensure stock did not become negative
-          if (updatedStock.quantity < 0) {
-            throw new Error(
-              `Insufficient stock for '${item.product.name}' at ${doc.sourceLocation?.name}. Operation would result in negative balance (${updatedStock.quantity}).`
-            );
-          }
-
-          // Insert centralized Stock Ledger record
-          await tx.stockMovement.create({
+          const movement = await tx.stockMovement.create({
             data: {
-              reference: doc.referenceNumber,
-              documentId: doc.id,
+              reference: document.referenceNumber,
+              documentId: document.id,
               productId: item.productId,
-              sourceLocationId: srcLocId,
-              quantity: -item.quantity, // Negative indicating deduction
+              sourceLocationId: document.sourceLocationId,
+              quantity: -item.quantity,
               type: "OUTGOING",
-              reason: `Delivery to ${doc.partnerName || "Customer"} from ${doc.sourceLocation?.name}`,
-              operatorId: user?.id || null,
+              reason: `Delivered ${item.quantity} ${item.product.uom} of ${item.product.name}`,
+              operatorId: user.id,
             },
           });
-        }
-      }
+          movements.push(movement);
 
-      // 3. INTERNAL TRANSFER
-      else if (doc.type === "INTERNAL_TRANSFER" || doc.type === "INTERNAL") {
-        const srcLocId = doc.sourceLocationId!;
-        const destLocId = doc.destinationLocationId!;
+        } else if (document.type === "INTERNAL_TRANSFER") {
+          // INTERNAL: Decrement source, increment destination
+          if (!document.sourceLocationId || !document.destinationLocationId) {
+            throw new Error("Both source and destination locations required for transfers.");
+          }
 
-        for (const item of doc.items) {
-          // Check source location availability
-          const currentStock = await tx.stockLevel.findUnique({
+          // Underflow protection at source
+          const sourceStock = await tx.stockLevel.findUnique({
             where: {
               productId_locationId: {
                 productId: item.productId,
-                locationId: srcLocId,
+                locationId: document.sourceLocationId,
               },
             },
           });
 
-          if (!currentStock || currentStock.quantity < item.quantity) {
+          const sourceQty = sourceStock?.quantity || 0;
+          if (sourceQty < item.quantity) {
             throw new Error(
-              `Insufficient stock for '${item.product.name}' at source location ${doc.sourceLocation?.name}. Available: ${
-                currentStock?.quantity || 0
-              }, Requested: ${item.quantity}`
+              `Insufficient stock for "${item.product.name}" at source: available ${sourceQty} ${item.product.uom}, requested ${item.quantity} ${item.product.uom}.`
             );
           }
 
-          // Deduct from source location
-          const sourceStock = await tx.stockLevel.update({
+          // Decrement source
+          await tx.stockLevel.update({
             where: {
               productId_locationId: {
                 productId: item.productId,
-                locationId: srcLocId,
+                locationId: document.sourceLocationId,
               },
             },
             data: {
@@ -185,19 +199,12 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
             },
           });
 
-          // Atomic underflow guard: ensure transfer did not breach zero balance
-          if (sourceStock.quantity < 0) {
-            throw new Error(
-              `Insufficient stock for '${item.product.name}' at source location ${doc.sourceLocation?.name}. Transfer would result in negative balance (${sourceStock.quantity}).`
-            );
-          }
-
-          // Add to destination location
+          // Increment destination
           await tx.stockLevel.upsert({
             where: {
               productId_locationId: {
                 productId: item.productId,
-                locationId: destLocId,
+                locationId: document.destinationLocationId,
               },
             },
             update: {
@@ -205,72 +212,67 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
             },
             create: {
               productId: item.productId,
-              locationId: destLocId,
+              locationId: document.destinationLocationId,
               quantity: item.quantity,
             },
           });
 
-          // DUAL LEDGER ENTRIES:
-          // Entry 1: Source Deduction (-item.quantity)
-          await tx.stockMovement.create({
+          const movement = await tx.stockMovement.create({
             data: {
-              reference: `${doc.referenceNumber}-OUT`,
-              documentId: doc.id,
+              reference: document.referenceNumber,
+              documentId: document.id,
               productId: item.productId,
-              sourceLocationId: srcLocId,
-              destinationLocationId: destLocId,
-              quantity: -item.quantity,
-              type: "INTERNAL",
-              reason: `Internal transfer out from ${doc.sourceLocation?.name} to ${doc.destinationLocation?.name}`,
-              operatorId: user?.id || null,
-            },
-          });
-
-          // Entry 2: Destination Addition (+item.quantity)
-          await tx.stockMovement.create({
-            data: {
-              reference: `${doc.referenceNumber}-IN`,
-              documentId: doc.id,
-              productId: item.productId,
-              sourceLocationId: srcLocId,
-              destinationLocationId: destLocId,
+              sourceLocationId: document.sourceLocationId,
+              destinationLocationId: document.destinationLocationId,
               quantity: item.quantity,
               type: "INTERNAL",
-              reason: `Internal transfer into ${doc.destinationLocation?.name} from ${doc.sourceLocation?.name}`,
-              operatorId: user?.id || null,
+              reason: `Transferred ${item.quantity} ${item.product.uom} of ${item.product.name}`,
+              operatorId: user.id,
             },
           });
+          movements.push(movement);
         }
       }
 
-      // Mark document as DONE and set validated timestamp
-      await tx.operationDocument.update({
+      // Mark document as DONE
+      const updatedDoc = await tx.operationDocument.update({
         where: { id },
         data: {
           status: "DONE",
           validatedAt: new Date(),
         },
       });
+
+      return { updatedDoc, movements };
     });
 
-    await logAuthEvent("OPERATION_VALIDATED", user?.id, {
-      referenceNumber: doc.referenceNumber,
-      type: doc.type,
-      itemCount: doc.items.length,
+    await logAuthEvent("OPERATION_VALIDATED", user.id, {
+      documentId: document.id,
+      referenceNumber: document.referenceNumber,
+      type: document.type,
+      movementsCreated: result.movements.length,
     });
 
     return NextResponse.json({
       success: true,
-      message: `Operation ${doc.referenceNumber} successfully validated! Centralized Stock Ledger updated.`,
+      message: `${document.referenceNumber} validated successfully. ${result.movements.length} ledger entry(ies) created.`,
+      document: result.updatedDoc,
+      movements: result.movements,
     });
   } catch (error: any) {
-    console.error("Error validating operation document:", error);
+    console.error("Error validating operation:", error);
+
+    // Return user-friendly errors from underflow checks
+    if (error.message?.includes("Insufficient stock") || error.message?.includes("required")) {
+      return NextResponse.json(
+        { success: false, message: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      {
-        success: false,
-        message: error.message || "Failed to validate operation document.",
-      },
-      { status: 400 }
+      { success: false, message: "Failed to validate operation document." },
+      { status: 500 }
     );
   }
 }

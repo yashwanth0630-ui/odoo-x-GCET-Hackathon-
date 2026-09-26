@@ -3,11 +3,10 @@ import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { logAuthEvent } from "@/lib/audit";
 
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
-
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params;
 
@@ -18,9 +17,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         stockLevels: {
           include: {
             location: {
-              include: {
-                warehouse: true,
-              },
+              include: { warehouse: true },
             },
           },
         },
@@ -29,64 +26,44 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
     if (!product) {
       return NextResponse.json(
-        { success: false, message: "Product not found" },
+        { success: false, message: "Product not found." },
         { status: 404 }
       );
     }
 
-    const totalStock = product.stockLevels.reduce((sum, s) => sum + s.quantity, 0);
+    const totalStock = product.stockLevels.reduce((acc, sl) => acc + sl.quantity, 0);
 
     return NextResponse.json({
       success: true,
       product: {
-        id: product.id,
-        name: product.name,
-        sku: product.sku,
-        barcode: product.barcode,
-        description: product.description,
-        categoryId: product.categoryId,
-        categoryName: product.category.name,
-        categoryCode: product.category.code,
-        uom: product.uom,
-        minThreshold: product.minThreshold,
-        idealStock: product.idealStock,
-        initialStock: product.initialStock,
-        costPrice: product.costPrice,
-        sellingPrice: product.sellingPrice,
+        ...product,
         totalStock,
-        isLowStock: totalStock <= product.minThreshold,
-        stockLevels: product.stockLevels.map((sl) => ({
-          id: sl.id,
-          locationId: sl.locationId,
-          locationName: sl.location.name,
-          locationCode: sl.location.code,
-          locationType: sl.location.type,
-          warehouseId: sl.location.warehouse.id,
-          warehouseName: sl.location.warehouse.name,
-          warehouseCode: sl.location.warehouse.code,
-          warehouseAddress: sl.location.warehouse.address,
-          quantity: sl.quantity,
-          updatedAt: sl.updatedAt,
-        })),
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
+        stockStatus:
+          totalStock === 0
+            ? "OUT_OF_STOCK"
+            : totalStock <= product.minThreshold
+            ? "LOW_STOCK"
+            : "IN_STOCK",
       },
     });
   } catch (error) {
-    console.error("Error retrieving product:", error);
+    console.error("Error fetching product:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to retrieve product" },
+      { success: false, message: "Failed to load product" },
       { status: 500 }
     );
   }
 }
 
-export async function PUT(req: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Authentication required to update products." },
+        { success: false, message: "Authentication required." },
         { status: 401 }
       );
     }
@@ -114,75 +91,68 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       sellingPrice,
     } = body;
 
-    const existingProduct = await prisma.product.findUnique({
-      where: { id },
-    });
-
-    if (!existingProduct) {
-      return NextResponse.json(
-        { success: false, message: "Product not found" },
-        { status: 404 }
-      );
-    }
-
-    if (sku && sku !== existingProduct.sku) {
-      const trimmedSku = sku.trim().toUpperCase();
-      const duplicate = await prisma.product.findUnique({
-        where: { sku: trimmedSku },
-      });
-      if (duplicate && duplicate.id !== id) {
-        return NextResponse.json(
-          { success: false, message: `SKU '${trimmedSku}' is already in use by another product.` },
-          { status: 409 }
-        );
-      }
-    }
-
-    const updated = await prisma.product.update({
+    const product = await prisma.product.update({
       where: { id },
       data: {
-        name: name ? name.trim() : existingProduct.name,
-        sku: sku ? sku.trim().toUpperCase() : existingProduct.sku,
-        barcode: barcode !== undefined ? barcode?.trim() : existingProduct.barcode,
-        description: description !== undefined ? description?.trim() : existingProduct.description,
-        categoryId: categoryId || existingProduct.categoryId,
-        uom: uom || existingProduct.uom,
-        minThreshold: minThreshold !== undefined ? Number(minThreshold) : existingProduct.minThreshold,
-        idealStock: idealStock !== undefined ? Number(idealStock) : existingProduct.idealStock,
-        costPrice: costPrice !== undefined ? (costPrice ? Number(costPrice) : null) : existingProduct.costPrice,
-        sellingPrice: sellingPrice !== undefined ? (sellingPrice ? Number(sellingPrice) : null) : existingProduct.sellingPrice,
+        ...(name && { name: name.trim() }),
+        ...(sku && { sku: sku.trim().toUpperCase() }),
+        ...(barcode !== undefined && { barcode: barcode?.trim() || null }),
+        ...(description !== undefined && { description: description?.trim() || null }),
+        ...(categoryId && { categoryId }),
+        ...(uom && { uom }),
+        ...(minThreshold !== undefined && { minThreshold: Number(minThreshold) }),
+        ...(idealStock !== undefined && { idealStock: Number(idealStock) }),
+        ...(costPrice !== undefined && { costPrice: costPrice ? Number(costPrice) : null }),
+        ...(sellingPrice !== undefined && {
+          sellingPrice: sellingPrice ? Number(sellingPrice) : null,
+        }),
       },
       include: {
         category: true,
       },
     });
 
-    await logAuthEvent("PRODUCT_UPDATED", user?.id, {
-      productId: updated.id,
-      sku: updated.sku,
-      name: updated.name,
+    await logAuthEvent("PRODUCT_UPDATED", user.id, {
+      productId: product.id,
+      name: product.name,
+      sku: product.sku,
     });
 
     return NextResponse.json({
       success: true,
-      message: "Product updated successfully.",
-      product: updated,
+      product,
+      message: `Product "${product.name}" updated successfully.`,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { success: false, message: "A product with this SKU already exists." },
+        { status: 409 }
+      );
+    }
+    if (error.code === "P2025") {
+      return NextResponse.json(
+        { success: false, message: "Product not found." },
+        { status: 404 }
+      );
+    }
     console.error("Error updating product:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to update product." },
+      { success: false, message: "Failed to update product" },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Authentication required to delete products." },
+        { success: false, message: "Authentication required." },
         { status: 401 }
       );
     }
@@ -196,44 +166,36 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
 
-    const product = await prisma.product.findUnique({
-      where: { id },
-    });
-
-    if (!product) {
-      return NextResponse.json(
-        { success: false, message: "Product not found" },
-        { status: 404 }
-      );
-    }
-
     await prisma.product.delete({
       where: { id },
     });
 
-    await logAuthEvent("PRODUCT_DELETED", user?.id, {
-      productId: id,
-      sku: product.sku,
-      name: product.name,
-    });
+    await logAuthEvent("PRODUCT_DELETED", user.id, { productId: id });
 
     return NextResponse.json({
       success: true,
-      message: `Product ${product.name} (${product.sku}) deleted successfully.`,
+      message: "Product deleted successfully.",
     });
   } catch (error: any) {
-    console.error("Error deleting product:", error);
     if (error.code === "P2003") {
       return NextResponse.json(
         {
           success: false,
-          message: "Cannot delete this product because it has active stock movements or operational documents recorded in the ledger. Archive the product or adjust its stock to zero instead.",
+          message:
+            "Cannot delete this product because it has related operation history or stock movements. Archive it instead.",
         },
         { status: 409 }
       );
     }
+    if (error.code === "P2025") {
+      return NextResponse.json(
+        { success: false, message: "Product not found." },
+        { status: 404 }
+      );
+    }
+    console.error("Error deleting product:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to delete product." },
+      { success: false, message: "Failed to delete product" },
       { status: 500 }
     );
   }

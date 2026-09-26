@@ -231,6 +231,20 @@ export default function AppLayout({ user, children }: AppLayoutProps) {
                   <span>Delivery Orders</span>
                 </Link>
 
+                {/* Internal Transfers */}
+                <Link
+                  href="/operations/internal-transfers"
+                  onClick={() => setMobileSidebarOpen(false)}
+                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-colors ${
+                    pathname === "/operations/internal-transfers"
+                      ? "text-indigo-400 font-semibold bg-indigo-500/10"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Internal Transfers</span>
+                </Link>
+
                 {/* Inventory Adjustment */}
                 <Link
                   href="/operations/adjustments"
